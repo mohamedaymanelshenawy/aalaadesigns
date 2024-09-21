@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.custom-image {
+  object-fit: contain; /* or cover, depending on your requirement */
+  width: 100%;
+  height: auto;
+}
