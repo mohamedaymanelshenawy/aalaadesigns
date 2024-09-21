@@ -58,11 +58,13 @@ export default function Home() {
           <h3 className="text-2xl mb-8">
             Mix & Match to level up your fashion game
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-7">
-            <CategoryCard name="Shirts" />
-            <CategoryCard name="Dresses" />
-            <CategoryCard name="Cardigans" />
-            <CategoryCard name="Jupes" />
+          <div className="container mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+              <CategoryCard name="Shirts" />
+              <CategoryCard name="Dresses" />
+              <CategoryCard name="Cardigans" />
+              <CategoryCard name="Jupes" />
+            </div>
           </div>
         </div>
       </section>
@@ -73,27 +75,29 @@ export default function Home() {
         <div className="max-w-[91rem] mx-auto text-center">
           <h1 className="text-5xl font-bold m-3">New Arrivals </h1>
           <h3 className="text-2xl mb-8">Take a look at our newsest items</h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-7">
-            <NewArraivalCard
-              description="Beutiful Dress"
-              name="Dress"
-              price="500"
-            />
-            <NewArraivalCard
-              description="Beutiful Dress"
-              name="Dress"
-              price="500"
-            />
-            <NewArraivalCard
-              description="Beutiful Dress"
-              name="Dress"
-              price="500"
-            />
-            <NewArraivalCard
-              description="Beutiful Dress"
-              name="Dress"
-              price="500"
-            />
+          <div className="container mx-auto px-4 py-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+              <NewArraivalCard
+                description="Beutiful Dress"
+                name="Dress"
+                price="500"
+              />
+              <NewArraivalCard
+                description="Beutiful Dress"
+                name="Dress"
+                price="500"
+              />
+              <NewArraivalCard
+                description="Beutiful Dress"
+                name="Dress"
+                price="500"
+              />
+              <NewArraivalCard
+                description="Beutiful Dress"
+                name="Dress"
+                price="500"
+              />
+            </div>
           </div>
         </div>
       </section>
