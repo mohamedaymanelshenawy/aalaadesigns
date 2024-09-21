@@ -26,7 +26,7 @@ export default function ProductDetail() {
             alt="Basic colored dress"
             className="rounded-lg object-cover w-full h-auto"
             height={500}
-            src="https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/455815435_813116620931890_8849671195779407477_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGx0HO6Gpo4fEUC8pk235Paf7Myk8ICN49_szKTwgI3jyxTq2n1ZL38Sz8_mtt7wKlEoldh7IzcmMLg29f3muj8&_nc_ohc=dF7LRjpnL0kQ7kNvgFCSjMI&_nc_ht=scontent.fcai22-2.fna&_nc_gid=AACpWsi0xKdUUq2pdYCA8eb&oh=00_AYCN6ij6ebzPopWZssjHWNTGFtxkYRaa_CXR-0aiJHpr0g&oe=66EDFA9C"
+            src="https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/455815435_813116620931890_8849671195779407477_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGx0HO6Gpo4fEUC8pk235Paf7Myk8ICN49_szKTwgI3jyxTq2n1ZL38Sz8_mtt7wKlEoldh7IzcmMLg29f3muj8&_nc_ohc=bOV7GM3CpqQQ7kNvgHyOAub&_nc_ht=scontent.fcai22-2.fna&_nc_gid=Aw4KY5meYQgbdN8PMIWF2bz&oh=00_AYDh_6yQ4PaoVytSFI33vinkQtvD5EjDiavHeWeiEtZLSg&oe=66F4921C"
             width={450}
           />
         </div>

@@ -24,7 +24,7 @@ export default function Home() {
           <img
             alt="Summer Collection"
             className="absolute inset-0 w-full h-full object-cover object-center"
-            src="https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/445776928_768402162070003_1987524795555289104_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFy_2L57uEASdEsnv-rWG7p9BYvEF2CJMf0Fi8QXYIkxxwBIL6S4Zo_96uD9_6YLkEjMj9LACKKuF5nrCf3XvNh&_nc_ohc=mkXOddkoOMwQ7kNvgHFu33Z&_nc_ht=scontent.fcai22-2.fna&_nc_gid=A4y6YL6BNeE38TczFuurHxV&oh=00_AYA24A-NHZA1Il8IrPu6qNdf0IYY2qN8OnN4fOI5_ErOZg&oe=66E790BE"
+            src="https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/445776928_768402162070003_1987524795555289104_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFy_2L57uEASdEsnv-rWG7p9BYvEF2CJMf0Fi8QXYIkxxwBIL6S4Zo_96uD9_6YLkEjMj9LACKKuF5nrCf3XvNh&_nc_ohc=CF4De-Kxl9wQ7kNvgG3TfM7&_nc_ht=scontent.fcai22-2.fna&oh=00_AYBPEZ5dA8Xtv-qAD04ZIVJ-cXah_LIA4_aRYfZjeGfCmw&oe=66F4877E"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
           <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
