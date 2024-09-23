@@ -17,7 +17,7 @@ function Category({ name, path }: CategoryCardProps) {
           backgroundImage: `url('${path}')`,
         }}
       >
-        <div className="text-white flex flex-none bg-black h-full justify-center bg-opacity-70">
+        <div className="text-white flex flex-none bg-black h-full justify-center bg-opacity-50">
           <h1 className="text-4xl max-h-7 m-auto">{name}</h1>
         </div>
       </Card>
