@@ -1,4 +1,3 @@
-"use client";
 import "@/styles/globals.css";
 //import { Metadata } from "next";
 
@@ -7,30 +6,31 @@ import clsx from "clsx";
 import { Analytics } from "@vercel/analytics/react";
 
 import { Providers } from "./providers";
+import Footer from "./footer/footer";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import CustomNavBar from "@/components/navbar";
 
-//export const metadata: Metadata = {
-//  title: {
-//    default: siteConfig.name,
-//    template: `%s - ${siteConfig.name}`,
-//  },
-//  description: siteConfig.description,
-//  icons: {
-//    icon: "/favicon.ico",
-//  },
-//};
-//type Viewport = {
-//  themeColor: { media: string; color: string }[];
-//};
-//export const viewport: Viewport = {
-//  themeColor: [
-//    { media: "(prefers-color-scheme: light)", color: "white" },
-//    { media: "(prefers-color-scheme: dark)", color: "black" },
-//  ],
-//};
+export const metadata: Metadata = {
+  title: {
+    default: siteConfig.name,
+    template: `%s - ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+type Viewport = {
+  themeColor: { media: string; color: string }[];
+};
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
+  ],
+};
 
 export default function RootLayout({
   children,
@@ -54,22 +54,8 @@ export default function RootLayout({
               {children}
               <Analytics />
             </main>
-            <footer
-              className="w-full h-[30rem] items-center justify-center"
-              //style={{
-              //  backgroundImage:
-              //    "url('https://img.freepik.com/premium-photo/row-clothes-are-hanging-rack-dark-room-banner-website_962764-82448.jpg?w=826')",
-              //}}
-            >
-              {/*<div className="w-full flex items-center justify-center">
-                <Image
-                  className="w-full"
-                  src="https://img.freepik.com/premium-photo/row-clothes-are-hanging-rack-dark-room-banner-website_962764-82448.jpg?w=826"
-                />*/}
-              <h1 className="text-center text-sm text-gray-500">
-                &copy; {new Date().getFullYear()} {siteConfig.name}
-              </h1>
-              {/*</div>*/}
+            <footer>
+              <Footer />
             </footer>
           </div>
         </Providers>
