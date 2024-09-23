@@ -12,7 +12,7 @@ function Category({ name, path }: CategoryCardProps) {
       <Card
         disableRipple
         isHoverable
-        className="w-[18rem] h-[31rem] bg-cover bg-center justify-center m-2 bg-white bg-opacity-none hover:shadow-xl hover:scale-105 transform transition-transform duration-300"
+        className="w-[21rem] h-[33rem] bg-cover bg-center justify-center m-2 bg-white bg-opacity-none hover:shadow-xl hover:scale-105 transform transition-transform duration-300"
         style={{
           backgroundImage: `url('${path}')`,
         }}

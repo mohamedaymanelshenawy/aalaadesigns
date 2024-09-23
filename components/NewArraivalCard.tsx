@@ -25,7 +25,7 @@ function NewArraivalCard({
       <Card
         disableRipple
         isHoverable
-        className="max-w-sm w-72 h-[34rem] m-2  flex flex-col bg-white bg-opacity-none  justify-center bg-cover bg-center hover:shadow-xl hover:scale-105 transform transition-transform duration-300"
+        className="max-w-sm w-[21rem] h-[33rem] m-2  flex flex-col bg-white bg-opacity-none  justify-center bg-cover bg-center hover:shadow-xl hover:scale-105 transform transition-transform duration-300"
         style={{
           backgroundImage: `url('${path}')`,
         }}

@@ -59,7 +59,7 @@ export default function Home() {
             Mix & Match to level up your fashion game
           </h3>
           <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            <div className="flex flex-wrap justify-center gap-4 ">
               <CategoryCard name="Shirts" path="/shirt.png" />
               <CategoryCard name="Dresses" path="dress.png" />
               <CategoryCard name="Cardigans" path="cardigan.png" />
@@ -76,7 +76,7 @@ export default function Home() {
           <h1 className="text-5xl font-bold m-3">New Arrivals </h1>
           <h3 className="text-2xl mb-8">Take a look at our newsest items</h3>
           <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+            <div className="flex flex-wrap justify-center gap-4">
               <NewArraivalCard
                 description="Beutiful Dress"
                 name="Dress"
