@@ -120,7 +120,7 @@ export default function CustomNavBar() {
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-40"
           role="button"
-          tabIndex="0"
+          tabIndex={0}
           onClick={() => setIsSideMenuOpen(false)}
           onKeyDown={(e) => {
             if (e.key === "Enter" || e.key === " ") {
