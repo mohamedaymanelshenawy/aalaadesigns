@@ -7,8 +7,11 @@ import {
   NavbarItem,
   Link,
   Button,
+  Image,
 } from "@nextui-org/react";
 import { Menu, X, ShoppingBag, Search } from "lucide-react";
+
+import "@/styles/globals.css";
 
 export default function CustomNavBar() {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
@@ -38,28 +41,31 @@ export default function CustomNavBar() {
     { name: "About", href: aboutPageHref },
   ];
   const categories = [
-    { name: "Skirt", href: "#" },
-    { name: "Jupes", href: "#" },
-    { name: "Dress", href: "#" },
-    { name: "Cardigans", href: "#" },
+    { name: "Basics", href: "#" },
+    { name: "Dresses", href: "#" },
     { name: "Tops", href: "#" },
-    { name: "Pants", href: "#" },
+    { name: "Skirts", href: "#" },
+    { name: "Abayas", href: "#" },
+    { name: "Tunic", href: "#" },
+    { name: "Scarves", href: "#" },
     { name: "Accessories", href: "#" },
-    { name: "Shoes", href: "#" },
+    { name: "Denim", href: "#" },
+    { name: "Jackets/Coats/Blazers", href: "#" },
+    { name: "Hoodies/Sweaters", href: "#" },
   ];
 
   return (
     <>
       <Navbar
-        shouldHideOnScroll
-        className="p-3 w-full rounded-lg backdrop-blur-md mx-auto bg-white bg-opacity-10 hover:bg-opacity-30 duration-300 hover:shadow-lg z-50"
+        className="p-3 w-full rounded-lg backdrop-blur-md mx-auto bg-white bg-opacity-60 hover:bg-opacity-30 duration-300 hover:shadow-lg z-50"
+        height="6rem"
       >
         <NavbarBrand>
           <Link
-            className="font-bold text-inherit text-2xl md:text-4xl hover:text-grey-900"
+            className="font-bold text-inherit flex w-full text-2xl md:text-4xl hover:text-grey-900"
             href="."
           >
-            Aalaa Designs
+            <Image height={70} src="/logoonly.png" />
           </Link>
         </NavbarBrand>
 

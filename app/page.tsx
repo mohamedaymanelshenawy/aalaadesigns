@@ -60,10 +60,10 @@ export default function Home() {
           </h3>
           <div className="container mx-auto px-4 py-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
-              <CategoryCard name="Shirts" />
-              <CategoryCard name="Dresses" />
-              <CategoryCard name="Cardigans" />
-              <CategoryCard name="Jupes" />
+              <CategoryCard name="Shirts" path="/shirt.png" />
+              <CategoryCard name="Dresses" path="dress.png" />
+              <CategoryCard name="Cardigans" path="cardigan.png" />
+              <CategoryCard name="Jupes" path="jupe.png" />
             </div>
           </div>
         </div>
@@ -80,21 +80,25 @@ export default function Home() {
               <NewArraivalCard
                 description="Beutiful Dress"
                 name="Dress"
+                path="/arrival1.png"
                 price="500"
               />
               <NewArraivalCard
                 description="Beutiful Dress"
                 name="Dress"
+                path="/arrival2.png"
                 price="500"
               />
               <NewArraivalCard
                 description="Beutiful Dress"
                 name="Dress"
+                path="/arrival3.png"
                 price="500"
               />
               <NewArraivalCard
                 description="Beutiful Dress"
                 name="Dress"
+                path="/arrival4.png"
                 price="500"
               />
             </div>

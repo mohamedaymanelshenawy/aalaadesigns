@@ -8,7 +8,7 @@ import { Facebook, Instagram } from "lucide-react";
 export default function Footer() {
   return (
     <footer className="w-full">
-      <div className="bg-gray-900 text-white py-12 px-4 bg-[url('/placeholder.svg?height=400&width=1200')] bg-cover bg-center">
+      <div className="bg-gray-900 text-white py-12 px-4 bg-[url('/footer.png')] bg-cover bg-center">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">Sign Up Now!</h2>
           <p className="mb-6">
@@ -39,9 +39,9 @@ export default function Footer() {
               <Image
                 alt="AALAA Logo"
                 className="max-w-full h-auto"
-                height={200}
+                height={150}
                 src="/logoblack.png"
-                width={200}
+                width={120}
               />
             </Link>
           </div>

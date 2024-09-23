@@ -26,8 +26,7 @@ function ProductCard({
         isHoverable
         className="w-[20rem] h-[32rem] flex flex-col bg-white bg-opacity-none  justify-center bg-cover bg-center hover:shadow-xl hover:scale-[1.01] transform transition-transform duration-300"
         style={{
-          backgroundImage:
-            "url('https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/455815435_813116620931890_8849671195779407477_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGx0HO6Gpo4fEUC8pk235Paf7Myk8ICN49_szKTwgI3jyxTq2n1ZL38Sz8_mtt7wKlEoldh7IzcmMLg29f3muj8&_nc_ohc=Xl1qpR8oXSUQ7kNvgEaPuox&_nc_ht=scontent.fcai22-2.fna&oh=00_AYBn_DM37KRcwsT4oQ7bMOzMLRCHBvcBfHkawaXUEPcn-g&oe=66E21D1C')",
+          backgroundImage: "url('/shirt.png')",
         }}
       >
         <div className="absolute inset-0">
