@@ -224,10 +224,10 @@ export default function CustomNavBar() {
         <div>
           <Button
             as={Link}
+            className="justify-start"
             color="primary"
             href="#"
             variant="flat"
-            className="justify-start"
           >
             Login
           </Button>
@@ -235,10 +235,10 @@ export default function CustomNavBar() {
         <div>
           <Button
             as={Link}
+            className="justify-start"
             color="primary"
             href="#"
             variant="flat"
-            className="justify-start"
           >
             Sign Up
           </Button>
