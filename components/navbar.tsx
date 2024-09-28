@@ -38,6 +38,7 @@ export default function CustomNavBar() {
 
   const aboutPageHref = "/about";
   const cartPageHref = "/cart";
+  const signinPageHref = "/Auth/sin-in";
 
   const menuItems = [
     { name: "Home", href: "/" },
@@ -224,7 +225,7 @@ export default function CustomNavBar() {
             as={Link}
             className="justify-start"
             color="primary"
-            href="#"
+            href={signinPageHref}
             variant="flat"
           >
             Login
