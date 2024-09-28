@@ -100,7 +100,6 @@ export default function CustomNavBar() {
             <Link
               aria-label="Search"
               className={`p-2 bg-transparent  ${isSearchExpanded ? "hidden" : ""}`}
-              variant="light"
               onClick={toggleSearch}
             >
               <Search className="w-5 h-5" />
@@ -123,7 +122,6 @@ export default function CustomNavBar() {
               <Link
                 aria-label="Close search"
                 className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 bg-transparent"
-                variant="light"
                 onClick={toggleSearch}
               >
                 <X className="w-4 h-4" />

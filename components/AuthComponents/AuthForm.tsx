@@ -1,5 +1,5 @@
 "use client";
-import { React } from "react";
+import * as React from "react";
 import { Image, Link } from "@nextui-org/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
