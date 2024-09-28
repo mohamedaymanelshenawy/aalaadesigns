@@ -4,6 +4,7 @@ import { Metadata } from "next";
 //import { Image } from "@nextui-org/react";
 import clsx from "clsx";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Providers } from "./providers";
 import Footer from "./footer/footer";
@@ -53,6 +54,7 @@ export default function RootLayout({
             <main className="container mx-auto max-w-[80rem] pt-10 px-2 flex-grow">
               {children}
               <Analytics />
+              <SpeedInsights />
             </main>
             <footer>
               <Footer />
