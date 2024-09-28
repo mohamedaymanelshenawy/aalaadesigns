@@ -38,7 +38,7 @@ export default function CustomNavBar() {
 
   const aboutPageHref = "/about";
   const cartPageHref = "/cart";
-  const signinPageHref = "/Auth/sin-in";
+  const signinPageHref = "/Auth/sign-in";
 
   const menuItems = [
     { name: "Home", href: "/" },
@@ -90,7 +90,7 @@ export default function CustomNavBar() {
         <NavbarBrand className="flex-1 justify-center mr-36 md:mr-36 sm:mr-36 sm:w-4/5 md:w-4/5">
           <Link
             className="font-bold text-inherit  flex w-full  text-2xl justify-center"
-            href="."
+            href="../"
           >
             <Image alt="Logo" height={70} src="/logoonly.png" />
           </Link>
@@ -227,6 +227,7 @@ export default function CustomNavBar() {
             color="primary"
             href={signinPageHref}
             variant="flat"
+            onClick={() => setIsSideMenuOpen(false)}
           >
             Login
           </Button>
