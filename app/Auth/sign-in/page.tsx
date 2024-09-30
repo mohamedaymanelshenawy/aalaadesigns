@@ -25,7 +25,7 @@ export default function Singin() {
       redirect: "follow",
     };
 
-    fetch("http://localhost:3000/api/signin", requestOptions)
+    fetch("/api/signin", requestOptions)
       .then((response) => response.text())
       .then((result) => {
         const parsedJson = JSON.parse(result);
