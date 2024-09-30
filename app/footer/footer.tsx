@@ -83,10 +83,16 @@ export default function Footer() {
             <div className="w-full sm:w-auto">
               <h3 className="font-bold mb-2">Follow Us</h3>
               <div className="flex space-x-4">
-                <Link aria-label="Facebook" href="https://facebook.com">
+                <Link
+                  aria-label="Facebook"
+                  href="https://www.facebook.com/AalaaDesigns/"
+                >
                   <Facebook className="w-6 h-6" />
                 </Link>
-                <Link aria-label="Instagram" href="https://instagram.com">
+                <Link
+                  aria-label="Instagram"
+                  href="https://www.instagram.com/aalaa_designs"
+                >
                   <Instagram className="w-6 h-6" />
                 </Link>
               </div>
@@ -94,7 +100,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
-      <div className="bg-[#deb887] text-black py-4 px-4 text-center">
+      <div className="bg-black text-white py-4 px-4 text-center">
         <p className="text-sm">© 2024 Aalaa Designs. All Rights Reserved</p>
       </div>
     </footer>

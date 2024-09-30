@@ -1,4 +1,5 @@
 "use client";
+import { useState, useEffect } from "react";
 import { Card, Button, Link } from "@nextui-org/react";
 import { ArrowUpRight } from "lucide-react";
 import { Gorditas } from "next/font/google";
@@ -16,20 +17,45 @@ const gorditas = Gorditas({
   weight: ["400", "700"],
 });
 
+type User = {
+  email: string;
+  password: string;
+  id: number;
+  createdat: string;
+  username: string;
+};
+
 export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    if (typeof localStorage !== "undefined") {
+      const newUser = localStorage.getItem("user");
+
+      if (newUser) {
+        var userString: string = newUser;
+        const parsedUser = JSON.parse(userString);
+
+        if (parsedUser !== user) {
+          setUser(parsedUser);
+        }
+      }
+    }
+  }, []);
+
   return (
-    <div className="delay-300 transtion">
+    <div>
       <Card className="w-full mx-auto overflow-hidden relative">
         <div className="relative aspect-[16/7]">
           <img
             alt="Summer Collection"
             className="absolute inset-0 w-full h-full object-cover object-center"
-            src="https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/445776928_768402162070003_1987524795555289104_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFy_2L57uEASdEsnv-rWG7p9BYvEF2CJMf0Fi8QXYIkxxwBIL6S4Zo_96uD9_6YLkEjMj9LACKKuF5nrCf3XvNh&_nc_ohc=CF4De-Kxl9wQ7kNvgG3TfM7&_nc_ht=scontent.fcai22-2.fna&oh=00_AYBPEZ5dA8Xtv-qAD04ZIVJ-cXah_LIA4_aRYfZjeGfCmw&oe=66F4877E"
+            src="/landing.png"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
           <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
             <h2
-              className={`${gorditas.className} text-3xl md:text-4xl lg:text-5xl font-bold text-center max-w-3xl mx-auto`}
+              className={`${gorditas.className} md:text-5xl lg:text-7xl opacity-[0.7] font-bold text-center max-w-6xl mx-auto`}
             >
               Discover The New Trending Summer Collection
             </h2>
@@ -61,9 +87,9 @@ export default function Home() {
           <div className="container mx-auto px-4 py-8">
             <div className="flex flex-wrap justify-center gap-4 ">
               <CategoryCard name="Shirts" path="/shirt.png" />
-              <CategoryCard name="Dresses" path="dress.png" />
-              <CategoryCard name="Cardigans" path="cardigan.png" />
-              <CategoryCard name="Jupes" path="jupe.png" />
+              <CategoryCard name="Dresses" path="/dress.png" />
+              <CategoryCard name="Cardigans" path="/cardigan.png" />
+              <CategoryCard name="Jupes" path="/jupe.png" />
             </div>
           </div>
         </div>
