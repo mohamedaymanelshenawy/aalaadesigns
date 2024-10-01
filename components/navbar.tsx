@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import {
   Navbar,
@@ -24,10 +25,9 @@ import {
   LogOut,
 } from "lucide-react";
 
-import "@/styles/globals.css";
-
 export default function CustomNavBar() {
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -108,10 +108,12 @@ export default function CustomNavBar() {
   return (
     <>
       <Navbar
-        className="p-3 w-full rounded-lg backdrop-blur-md mx-auto bg-white bg-opacity-60 hover:bg-opacity-30 duration-300 hover:shadow-lg z-50"
+        isBordered
+        className="p-3 w-full rounded-lg backdrop-blur-md mx-auto bg-white  duration-300 hover:shadow-lg z-50"
         height="6rem"
+        position="sticky"
       >
-        <NavbarContent className="flex" justify="start">
+        <NavbarContent className="md:flex-1">
           <Button
             aria-label={isSideMenuOpen ? "Close menu" : "Open menu"}
             className="p-0 bg-transparent ml-2 w-2 h-8 flex items-center justify-center"
@@ -125,9 +127,10 @@ export default function CustomNavBar() {
             </div>
           </Button>
         </NavbarContent>
-        <NavbarBrand className="flex-1 justify-center mr-36 md:mr-36 sm:mr-36 sm:w-4/5 md:w-4/5">
+
+        <NavbarBrand className="flex-1 justify-center">
           <Link
-            className="font-bold text-inherit  flex w-full  text-2xl justify-center"
+            className="font-bold text-inherit flex w-full text-2xl justify-center"
             href="../"
           >
             <Image alt="Logo" height={70} src="/logoonly.png" />
@@ -138,7 +141,7 @@ export default function CustomNavBar() {
           <div className="relative flex items-center justify-end">
             <Link
               aria-label="Search"
-              className={`p-2 bg-transparent  ${isSearchExpanded ? "hidden" : ""}`}
+              className={`p-2 bg-transparent ${isSearchExpanded ? "hidden" : ""}`}
               onClick={toggleSearch}
             >
               <Search className="w-5 h-5" />
@@ -152,7 +155,7 @@ export default function CustomNavBar() {
             >
               <input
                 ref={searchInputRef}
-                className="w-full pl-10 pr-4 py-2 rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="search"
                 placeholder="Search..."
                 type="text"
@@ -168,11 +171,11 @@ export default function CustomNavBar() {
             </div>
           </div>
           {menuItems.map((item) => (
-            <NavbarItem key={item.name} className="hover:bg-none ">
+            <NavbarItem key={item.name} className="hover:bg-none">
               <Button
                 disableRipple
                 as={Link}
-                className=" hover:text-gray-600"
+                className="hover:text-gray-600"
                 color="primary"
                 href={item.href}
                 variant="light"
@@ -183,7 +186,8 @@ export default function CustomNavBar() {
             </NavbarItem>
           ))}
         </NavbarContent>
-        <NavbarContent as="div" justify="end">
+
+        <NavbarContent className="md:flex-1" justify="end">
           <Dropdown placement="bottom-end">
             <DropdownTrigger>
               {user ? (
@@ -220,64 +224,41 @@ export default function CustomNavBar() {
               </DropdownMenu>
             ) : (
               <DropdownMenu aria-label="Profile Actions" variant="flat">
-                <DropdownItem key="settings">My Settings</DropdownItem>
-                <DropdownItem key="team_settings">Team Settings</DropdownItem>
-                <DropdownItem key="analytics">Analytics</DropdownItem>
-                <DropdownItem key="system">System</DropdownItem>
-                <DropdownItem key="configurations">Configurations</DropdownItem>
                 <DropdownItem key="help_and_feedback">
                   Help & Feedback
                 </DropdownItem>
-                <DropdownItem key="logout" color="danger">
-                  Log Out
-                </DropdownItem>
+                <DropdownItem key="logout">Sign in</DropdownItem>
               </DropdownMenu>
             )}
           </Dropdown>
         </NavbarContent>
       </Navbar>
 
-      {/* Overlay */}
-      {isSideMenuOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40"
-          role="button"
-          tabIndex={0}
-          onClick={() => setIsSideMenuOpen(false)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              setIsSideMenuOpen(false);
-            }
-          }}
-        />
-      )}
-
-      {/* Side Menu */}
+      {/* Full-screen Side Menu */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white shadow-lg transform transition-transform duration-300 ease-in-out z-50 ${
+        className={`fixed inset-0 bg-white z-50 transform transition-transform duration-300 ease-in-out ${
           isSideMenuOpen ? "translate-x-0" : "-translate-x-full"
         } flex flex-col`}
       >
-        <div className="p-4 border-b flex flex-col items-center">
-          <div className="w-full flex justify-end mb-4">
-            <Button
-              aria-label="Close menu"
-              className="p-0 bg-transparent"
-              variant="light"
-              onClick={() => setIsSideMenuOpen(false)}
-            >
-              <X className="w-6 h-6" />
-            </Button>
-          </div>
+        <div className="p-4 border-b flex justify-between items-center">
           <Image
             alt="Logo"
             className="mx-auto"
             height={110}
             src="/logoblack.png"
           />
+          <Button
+            aria-label="Close menu"
+            className="p-0 bg-transparent"
+            variant="light"
+            onClick={() => setIsSideMenuOpen(false)}
+          >
+            <X className="w-6 h-6" />
+          </Button>
         </div>
         <div className="flex-grow overflow-y-auto">
           <div className="p-4">
+            <h2 className="text-2xl font-bold mb-4">Categories</h2>
             {categories.map((item) => (
               <Link
                 key={item.name}
@@ -289,62 +270,29 @@ export default function CustomNavBar() {
               </Link>
             ))}
 
-            {isSmallScreen && (
-              <>
-                <h3 className="text-lg font-semibold mt-6 mb-2">Menu</h3>
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    className="flex py-2 px-4 text-gray-800 hover:bg-gray-200 rounded"
-                    href={item.href}
-                    onClick={() => setIsSideMenuOpen(false)}
-                  >
-                    {item.icon && <span className="mr-2">{item.icon}</span>}
-                    {item.name}
-                  </Link>
-                ))}
-              </>
-            )}
+            <h2 className="text-2xl font-bold mt-8 mb-4">Menu</h2>
+            {menuItems.map((item) => (
+              <Link
+                key={item.name}
+                className="flex py-2 px-4 text-xl font-semibold text-gray-800 hover:bg-gray-200 rounded"
+                href={item.href}
+                onClick={() => setIsSideMenuOpen(false)}
+              >
+                {item.icon && <span className="mr-2">{item.icon}</span>}
+                {item.name}
+              </Link>
+            ))}
           </div>
         </div>
-        {user ? (
-          <div className="p-4">
+        <div className="p-4 border-t">
+          {user ? (
             <div className="flex items-center">
-              <LogOut />
+              <LogOut className="mr-2" />
               <Button
                 as={Link}
-                className="justify-start"
+                className="justify-start w-full"
                 color="primary"
                 href={signinPageHref}
-                variant="flat"
-                onClick={() => setIsSideMenuOpen(false)}
-              >
-                <span className="text-xl">Logout</span>
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <div className="p-4">
-            <div className="flex items-center">
-              <LogIn />
-              <Button
-                as={Link}
-                className="justify-start"
-                color="primary"
-                href={signinPageHref}
-                variant="flat"
-                onClick={() => setIsSideMenuOpen(false)}
-              >
-                <span className="text-xl">Login</span>
-              </Button>
-            </div>
-            <div className="flex items-center">
-              <UserRoundPlus />
-              <Button
-                as={Link}
-                className="justify-start"
-                color="primary"
-                href={signupPageHref}
                 variant="flat"
                 onClick={() => {
                   setIsSideMenuOpen(false);
@@ -352,11 +300,40 @@ export default function CustomNavBar() {
                   setUser(null);
                 }}
               >
-                <span className="text-xl">Sign up</span>
+                <span className="text-xl">Logout</span>
               </Button>
             </div>
-          </div>
-        )}
+          ) : (
+            <>
+              <div className="flex items-center mb-2">
+                <LogIn className="mr-2" />
+                <Button
+                  as={Link}
+                  className="justify-start w-full"
+                  color="primary"
+                  href={signinPageHref}
+                  variant="flat"
+                  onClick={() => setIsSideMenuOpen(false)}
+                >
+                  <span className="text-xl">Login</span>
+                </Button>
+              </div>
+              <div className="flex items-center">
+                <UserRoundPlus className="mr-2" />
+                <Button
+                  as={Link}
+                  className="justify-start w-full"
+                  color="primary"
+                  href={signupPageHref}
+                  variant="flat"
+                  onClick={() => setIsSideMenuOpen(false)}
+                >
+                  <span className="text-xl">Sign up</span>
+                </Button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
     </>
   );

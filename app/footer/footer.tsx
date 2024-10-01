@@ -16,12 +16,12 @@ export default function Footer() {
           </p>
           <form className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Input
-              className="max-w-xs bg-gray-800 border-gray-700 rounded-[70px] overflow-hidden"
+              className="max-w-xs bg-gray-800  rounded-2xl overflow-hidden"
               placeholder="Your E-mail"
               type="email"
             />
             <Button
-              className="bg-white text-black hover:bg-gray-200"
+              className="bg-white rounded-2xl text-black hover:bg-gray-200"
               type="submit"
             >
               Submit
@@ -52,15 +52,7 @@ export default function Footer() {
                 <li>
                   <Link href="/faq">FAQ</Link>
                 </li>
-                <li>
-                  <Link href="/shipping">Shipping</Link>
-                </li>
-                <li>
-                  <Link href="/payment">Payment</Link>
-                </li>
-                <li>
-                  <Link href="/returns">Returns</Link>
-                </li>
+
                 <li>
                   <Link href="/contact">Contact Us</Link>
                 </li>
