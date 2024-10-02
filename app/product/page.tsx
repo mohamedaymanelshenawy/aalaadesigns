@@ -1,149 +1,199 @@
 "use client";
 import { useState } from "react";
-import { Heart, Share2, Minus, Plus } from "lucide-react";
-import { Image, Button } from "@nextui-org/react";
 
-export default function ProductDetail() {
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const ColorOption = ({ color, className }) => (
+  <div
+    className={`w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition-colors duration-200 ${className}`}
+    style={{ backgroundColor: color }}
+  />
+);
+
+const SizeOption = ({ size, selected, onClick }) => (
+  <button
+    className={`px-4 py-2 border-2 rounded-md transition-colors duration-200 ${selected ? "bg-black text-white border-black" : "bg-white text-black border-gray-300 hover:border-black"}`}
+    onClick={onClick}
+  >
+    {size}
+  </button>
+);
+
+const ProductImage = ({ src, alt, className }) => (
+  <img
+    alt={alt}
+    className={`object-cover rounded-lg shadow-md transition-transform duration-300 hover:scale-105 ${className}`}
+    src={src}
+  />
+);
+
+const RelatedProduct = ({ src, alt, title, price }) => (
+  <Card className="overflow-hidden transition-shadow duration-300 hover:shadow-lg">
+    <CardContent className="p-0">
+      <ProductImage alt={alt} className="w-full h-60 object-cover" src={src} />
+      <div className="p-4">
+        <h3 className="font-semibold text-lg">{title}</h3>
+        <p className="text-gray-600">{price} EGP</p>
+      </div>
+    </CardContent>
+  </Card>
+);
+
+export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState("#FF1493");
 
   const sizes = ["S", "M", "L", "XL", "2XL", "3XL"];
-  const colors = [
-    { name: "Hot Pink", value: "#FF1493" },
-    { name: "Deep Sky Blue", value: "#00BFFF" },
-    { name: "Black", value: "#000000" },
-    { name: "Light Sky Blue", value: "#87CEFA" },
-    { name: "Yellow Green", value: "#9ACD32" },
-    { name: "Tan", value: "#D2B48C" },
-  ];
+  const colors = ["#8A9A5B", "#FFA500", "#000000", "#FFC0CB"];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid md:grid-cols-2 gap-8">
-        <div>
-          <Image
+    <div className="container mx-auto px-4 py-12">
+      <div className="grid md:grid-cols-2 gap-12">
+        <div className="space-y-6">
+          <ProductImage
             alt="Basic colored dress"
-            className="rounded-lg object-cover w-full h-auto"
-            height={500}
-            src="https://scontent.fcai22-2.fna.fbcdn.net/v/t39.30808-6/455815435_813116620931890_8849671195779407477_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGx0HO6Gpo4fEUC8pk235Paf7Myk8ICN49_szKTwgI3jyxTq2n1ZL38Sz8_mtt7wKlEoldh7IzcmMLg29f3muj8&_nc_ohc=bOV7GM3CpqQQ7kNvgHyOAub&_nc_ht=scontent.fcai22-2.fna&_nc_gid=Aw4KY5meYQgbdN8PMIWF2bz&oh=00_AYDh_6yQ4PaoVytSFI33vinkQtvD5EjDiavHeWeiEtZLSg&oe=66F4921C"
-            width={450}
+            className="w-full h-[600px] rounded-xl"
+            src="/arrival1.png"
           />
+          <div className="grid grid-cols-3 gap-4">
+            <ProductImage
+              alt="Dress thumbnail 1"
+              className="w-full h-32 rounded"
+              src="/arrival2.png"
+            />
+            <ProductImage
+              alt="Dress thumbnail 2"
+              className="w-full h-32 rounded"
+              src="/dress.png"
+            />
+            <ProductImage
+              alt="Dress thumbnail 3"
+              className="w-full h-32 rounded-lg"
+              src="/dress.png"
+            />
+          </div>
         </div>
-        <div>
-          <h1 className="text-2xl font-semibold mb-2">Basic colored dress</h1>
-          <p className="text-xl font-bold mb-4">Price: 450 EGP</p>
-
-          <div className="mb-4">
-            <h2 className="font-semibold mb-2">Color:</h2>
-            <div className="flex space-x-2">
-              {colors.map((color) => (
-                <label
-                  key={color.value}
-                  aria-label={`Color ${color.name}`}
-                  className="cursor-pointer"
+        <div className="space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Basic colored dress</h1>
+            <p className="text-2xl font-semibold text-gray-700">450 EGP</p>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Color</h2>
+            <RadioGroup className="flex space-x-4" defaultValue="green">
+              {colors.map((color, index) => (
+                <RadioGroupItem
+                  key={index}
+                  className="sr-only peer"
+                  id={`color-${index}`}
+                  value={color}
                 >
-                  <input
-                    checked={selectedColor === color.value}
-                    className="sr-only peer"
-                    name="color"
-                    type="radio"
-                    value={color.value}
-                    onChange={() => setSelectedColor(color.value)}
-                  />
-                  <span
-                    className="block w-8 h-8 rounded-full border-2 border-gray-300 peer-checked:border-blue-500 peer-checked:ring-2 peer-checked:ring-blue-500 peer-checked:ring-offset-2"
-                    style={{ backgroundColor: color.value }}
-                    title={color.name}
-                  />
-                </label>
+                  <label className="cursor-pointer" htmlFor={`color-${index}`}>
+                    <ColorOption
+                      className="peer-checked:border-black"
+                      color={color}
+                    />
+                  </label>
+                </RadioGroupItem>
               ))}
-            </div>
+            </RadioGroup>
           </div>
-
-          <div className="mb-4">
-            <p className="text-green-500 font-semibold">Available in Stock</p>
-            <p>Material: Cotton</p>
+          <div>
+            <h2 className="text-lg font-semibold mb-2">Available in Stock</h2>
+            <p className="text-gray-600">Material: Cotton</p>
           </div>
-
-          <div className="mb-4">
-            <h2 className="font-semibold mb-2">Size:</h2>
-            <div className="flex flex-wrap gap-2">
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Size</h2>
+            <div className="flex flex-wrap gap-3">
               {sizes.map((size) => (
-                <label key={size} className="cursor-pointer">
-                  <input
-                    checked={selectedSize === size}
-                    className="sr-only peer"
-                    name="size"
-                    type="radio"
-                    value={size}
-                    onChange={() => setSelectedSize(size)}
-                  />
-                  <span className="flex items-center justify-center rounded-md border-2 border-gray-300 bg-white px-3 py-2 text-sm peer-checked:border-blue-500 peer-checked:text-blue-500 hover:bg-gray-50">
-                    {size}
-                  </span>
-                </label>
+                <SizeOption
+                  key={size}
+                  selected={selectedSize === size}
+                  size={size}
+                  onClick={() => setSelectedSize(size)}
+                />
               ))}
             </div>
           </div>
-
-          <div className="flex items-center space-x-4 mb-4">
-            <span className="font-semibold">Quantity:</span>
-            <button
-              className="p-1 rounded-md border border-gray-300 hover:bg-gray-100"
-              onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
+          <div>
+            <h2 className="text-lg font-semibold mb-3">Quantity</h2>
+            <Select
+              value={quantity.toString()}
+              onValueChange={(value) => setQuantity(parseInt(value))}
             >
-              <Minus className="h-4 w-4" />
-            </button>
-            <span className="w-8 text-center">{quantity}</span>
-            <button
-              className="p-1 rounded-md border border-gray-300 hover:bg-gray-100"
-              onClick={() => setQuantity((prev) => prev + 1)}
-            >
-              <Plus className="h-4 w-4" />
-            </button>
+              <SelectTrigger className="w-32">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[1, 2, 3, 4, 5].map((num) => (
+                  <SelectItem key={num} value={num.toString()}>
+                    {num}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-
-          <div className="space-y-2 mb-4">
-            <Button
-              disableRipple
-              className="w-full bg-gray-700 hover:bg-gray-800 text-white py-2 px-4 rounded"
-            >
+          <div className="space-y-4">
+            <Button className="w-full bg-black hover:bg-gray-800 text-white py-3 text-lg">
               Add to Cart
             </Button>
             <Button
-              disableRipple
-              className="w-full border border-gray-300 hover:bg-gray-50 py-2 px-4 rounded"
+              className="w-full border-black text-black hover:bg-gray-100 py-3 text-lg"
+              variant="outline"
             >
               Buy Now
             </Button>
           </div>
-
-          <div className="flex items-center space-x-4 mb-4">
-            <Button
-              disableRipple
-              className="flex items-center text-sm text-gray-600 hover:text-gray-800"
-              variant="flat"
-            >
-              <Heart className="mr-2 h-4 w-4" />
-              Add to WISHLIST
-            </Button>
-            <Button
-              disableRipple
-              className="flex items-center text-sm text-gray-600 hover:text-gray-800"
-              variant="flat"
-            >
-              <Share2 className="mr-2 h-4 w-4" />
-              Share
-            </Button>
+          <div className="bg-yellow-50 p-6 rounded-xl">
+            <p className="text-sm space-y-2">
+              <span className="block">
+                ✓ Get shipping within 24 working hours
+              </span>
+              <span className="block">
+                ✓ Exchange and Return within 30 Days
+              </span>
+            </p>
           </div>
-
-          <div className="bg-yellow-50 p-4 rounded-lg">
-            <ul className="list-disc list-inside space-y-1 text-sm">
-              <li>Fast Shipping (within 3-5 working days)</li>
-              <li>Exchange and Return within 30 Days</li>
-            </ul>
-          </div>
+        </div>
+      </div>
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold mb-6">You may also like</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <RelatedProduct
+            alt="White shirt"
+            price="450"
+            src="/dress.png"
+            title="Elegant White Shirt"
+          />
+          <RelatedProduct
+            alt="Cardigan"
+            price="450"
+            src="/dress.png"
+            title="Cozy Knit Cardigan"
+          />
+          <RelatedProduct
+            alt="Dress"
+            price="450"
+            src="/dress.png"
+            title="Floral Summer Dress"
+          />
+        </div>
+        <div className="mt-10 text-center">
+          <Button
+            className="px-8 py-3 text-lg bg-black rounded border-black text-white hover:bg-gray-100"
+            variant="outline"
+          >
+            Explore more
+          </Button>
         </div>
       </div>
     </div>
