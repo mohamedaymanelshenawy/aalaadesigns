@@ -1,12 +1,23 @@
 "use client";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { ButtonHTMLAttributes, ReactNode } from "react";
 import { CreditCard, Truck, AlertCircle } from "lucide-react";
+// Input component
+import {
+  InputHTMLAttributes,
+  LabelHTMLAttributes,
+  HTMLAttributes,
+} from "react";
 
-// Button component
-const Button = ({ children, className, ...props }) => (
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+  className?: string;
+}
+
+const Button = ({ children, className, ...props }: ButtonProps) => (
   <button
-    className={`px-4 py-2 bg-black text-white rounded hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 ${className}`}
+    className={`px-4 py-2 rounded focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200 ${className}`}
     {...props}
   >
     {children}
@@ -14,22 +25,35 @@ const Button = ({ children, className, ...props }) => (
 );
 
 // Card component
-const Card = ({ children, className, ...props }) => (
-  <div className={`bg-white shadow-lg rounded-xl ${className}`} {...props}>
+interface CardProps {
+  children: ReactNode;
+  className?: string;
+  [key: string]: any;
+}
+
+const Card = ({ children, className, ...props }: CardProps) => (
+  <div className={` shadow-lg rounded-xl ${className}`} {...props}>
     {children}
   </div>
 );
 
-// Input component
-const Input = ({ className, ...props }) => (
+const Input = ({
+  className,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) => (
   <input
-    className={`w-full px-4 py-3 border-2 border-gray-200 rounded focus:outline-none focus:border-black transition-colors duration-200 ${className}`}
+    className={`w-full px-4 py-3 border-2  rounded focus:outline-none  transition-colors duration-200 ${className}`}
     {...props}
   />
 );
 
 // Label component
-const Label = ({ children, htmlFor, className, ...props }) => (
+const Label = ({
+  children,
+  htmlFor,
+  className,
+  ...props
+}: LabelHTMLAttributes<HTMLLabelElement>) => (
   <label
     className={`block text-sm font-medium text-gray-700 mb-1 ${className}`}
     htmlFor={htmlFor}
@@ -40,16 +64,16 @@ const Label = ({ children, htmlFor, className, ...props }) => (
 );
 
 // RadioGroup component
-const RadioGroup = ({ children, ...props }) => <div {...props}>{children}</div>;
+const RadioGroup = ({ children, ...props }: HTMLAttributes<HTMLDivElement>) => (
+  <div {...props}>{children}</div>
+);
 
 // RadioGroupItem component
-const RadioGroupItem = ({ id, ...props }) => (
-  <input
-    className="w-5 h-5 text-black border-gray-300 focus:ring-black"
-    id={id}
-    type="radio"
-    {...props}
-  />
+const RadioGroupItem = ({
+  id,
+  ...props
+}: InputHTMLAttributes<HTMLInputElement>) => (
+  <input className="w-5 h-5 " id={id} type="radio" {...props} />
 );
 
 export default function ModernCheckoutPage() {
@@ -122,7 +146,7 @@ export default function ModernCheckoutPage() {
               <div className="space-y-6">
                 <h2 className="text-2xl font-semibold mb-6">Shipping</h2>
                 <RadioGroup>
-                  <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg hover:border-black transition-colors duration-200">
+                  <div className="flex items-center space-x-3 p-4 border-2  rounded-lg  transition-colors duration-200">
                     <RadioGroupItem
                       id="standard"
                       name="shipping"
@@ -132,11 +156,11 @@ export default function ModernCheckoutPage() {
                       className="flex items-center space-x-3 cursor-pointer"
                       htmlFor="standard"
                     >
-                      <Truck className="text-black" size={24} />
+                      <Truck className="" size={24} />
                       <span>Standard Shipping (3-5 business days)</span>
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg mt-4 hover:border-black transition-colors duration-200">
+                  <div className="flex items-center space-x-3 p-4 border-2   duration-200">
                     <RadioGroupItem
                       id="express"
                       name="shipping"
@@ -146,7 +170,7 @@ export default function ModernCheckoutPage() {
                       className="flex items-center space-x-3 cursor-pointer"
                       htmlFor="express"
                     >
-                      <Truck className="text-black" size={24} />
+                      <Truck size={24} />
                       <span>Express Shipping (1-2 business days)</span>
                     </Label>
                   </div>
@@ -160,17 +184,17 @@ export default function ModernCheckoutPage() {
               <div className="space-y-6">
                 <h2 className="text-2xl font-semibold mb-6">Payment</h2>
                 <RadioGroup>
-                  <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg hover:border-black transition-colors duration-200">
+                  <div className="flex items-center space-x-3 p-4 border-2  rounded-lg  transition-colors duration-200">
                     <RadioGroupItem id="card" name="payment" value="card" />
                     <Label
                       className="flex items-center space-x-3 cursor-pointer"
                       htmlFor="card"
                     >
-                      <CreditCard className="text-black" size={24} />
+                      <CreditCard size={24} />
                       <span>Credit Card</span>
                     </Label>
                   </div>
-                  <div className="flex items-center space-x-3 p-4 border-2 border-gray-200 rounded-lg mt-4 hover:border-black transition-colors duration-200">
+                  <div className="flex items-center space-x-3 p-4 border-2  rounded-lg mt-4  transition-colors duration-200">
                     <RadioGroupItem id="paypal" name="payment" value="paypal" />
                     <Label
                       className="flex items-center space-x-3 cursor-pointer"
@@ -224,8 +248,8 @@ export default function ModernCheckoutPage() {
               <span>$55.00</span>
             </div>
           </div>
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <div className="flex items-center space-x-2 text-gray-700">
+          <div className="mt-8 p-4  rounded-lg">
+            <div className="flex items-center space-x-2 ">
               <AlertCircle size={24} />
               <span className="text-sm">
                 Your order will be processed securely.

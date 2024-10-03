@@ -60,9 +60,9 @@ export default function ModernFAQPage() {
   }, [searchQuery]);
 
   return (
-    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8 ">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-5xl font-bold text-center mb-8 text-gray-900">
+        <h1 className="text-5xl font-bold text-center mb-8">
           Frequently Asked Questions
         </h1>
 
@@ -73,7 +73,7 @@ export default function ModernFAQPage() {
               className="w-full max-w-2xl mx-auto rounded"
               placeholder="Search FAQs..."
               size="lg"
-              startContent={<Search className="text-gray-400" />}
+              startContent={<Search className="" />}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -81,7 +81,7 @@ export default function ModernFAQPage() {
           </div>
         </div>
 
-        <Card className="w-full shadow-xl">
+        <Card className="w-full shadow-xl bg-transparent">
           <CardBody className="p-0">
             {filteredFaqs.length > 0 ? (
               <Accordion className="p-2" variant="splitted">
@@ -91,8 +91,8 @@ export default function ModernFAQPage() {
                     aria-label={faq.question}
                     classNames={{
                       base: "py-4",
-                      title: "text-xl font-semibold text-gray-900",
-                      content: "text-lg text-gray-700 pt-2",
+                      title: "text-xl font-semibold ",
+                      content: "text-lg  pt-2",
                     }}
                     indicator={<ChevronDown className="text-2xl" />}
                     title={faq.question}
@@ -102,7 +102,7 @@ export default function ModernFAQPage() {
                 ))}
               </Accordion>
             ) : (
-              <div className="p-8 text-center text-gray-700">
+              <div className="p-8 text-center ">
                 <p className="text-xl">
                   No matching FAQs found. Please try a different search term.
                 </p>
@@ -111,11 +111,9 @@ export default function ModernFAQPage() {
           </CardBody>
         </Card>
 
-        <div className="mt-16 text-center bg-white p-8 rounded-3xl shadow-lg">
-          <h2 className="text-3xl font-bold mb-4 text-gray-900">
-            Still have questions?
-          </h2>
-          <p className="text-xl text-gray-700 mb-6">
+        <div className="mt-16 text-center  p-8 rounded-3xl shadow-lg">
+          <h2 className="text-3xl font-bold mb-4 ">Still have questions?</h2>
+          <p className="text-xl  mb-6">
             Our customer support team is here to help you with any inquiries.
           </p>
           <Button

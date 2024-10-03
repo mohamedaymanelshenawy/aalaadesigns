@@ -46,7 +46,7 @@ export default function CartPage() {
           </div>
         </div>
         <div className="md:col-span-1">
-          <div className=" p-6 rounded-sm bg-[#FBFBFB]">
+          <div className=" p-6 rounded-sm ">
             <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
@@ -61,15 +61,7 @@ export default function CartPage() {
                 <span>Total</span>
                 <span>550 EGP</span>
               </div>
-              <div className="flex justify-between items-center space-x-2">
-                <span className="text-sm font-medium">COUPON CODE</span>
-                <div className="flex space-x-2">
-                  <Input className="w-32" placeholder="Enter code" />
-                  <Button size="sm" variant="flat">
-                    +
-                  </Button>
-                </div>
-              </div>
+
               <Button className="w-full">CHECKOUT</Button>
             </div>
           </div>

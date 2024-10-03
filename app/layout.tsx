@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { Providers } from "./providers";
+import { UserProvider } from "./contexts/UserContext";
 import Footer from "./footer/footer";
 
 import { siteConfig } from "@/config/site";
@@ -48,19 +49,21 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
-          <div className="relative flex flex-col h-screen">
-            <CustomNavBar />
-            <main className="container mx-auto max-w-[80rem] pt-10 px-2 flex-grow">
-              {children}
-              <Analytics />
-              <SpeedInsights />
-            </main>
-            <footer>
-              <Footer />
-            </footer>
-          </div>
-        </Providers>
+        <UserProvider>
+          <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+            <div className="relative flex flex-col h-screen">
+              <CustomNavBar />
+              <main className="container mx-auto max-w-[80rem] pt-10 px-2 flex-grow">
+                {children}
+                <Analytics />
+                <SpeedInsights />
+              </main>
+              <footer>
+                <Footer />
+              </footer>
+            </div>
+          </Providers>
+        </UserProvider>
       </body>
     </html>
   );
