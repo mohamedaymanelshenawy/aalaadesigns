@@ -1,9 +1,26 @@
 "use client";
 //import  from "next/image";
-import { Minus, Plus } from "lucide-react";
-import { Button, Input, Image } from "@nextui-org/react";
+import { useState } from "react";
+import { Image } from "@nextui-org/react";
+import { useTheme } from "next-themes";
+
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function CartPage() {
+  const [quantity, setQuantity] = useState(1);
+  const { theme } = useTheme();
+  const incrementQuantity = () => setQuantity((prev) => Math.min(prev + 1, 99));
+  const decrementQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
+
+  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseInt(e.target.value);
+
+    if (!isNaN(value) && value >= 1 && value <= 99) {
+      setQuantity(value);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8 mt-0">CART</h1>
@@ -32,14 +49,31 @@ export default function CartPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Button size="sm" variant="flat">
-                  <Minus className="h-4 w-4" />
-                </Button>
-                <Input className="w-16 text-center" type="number" />
-                <Button size="sm" variant="flat">
-                  <Plus className="h-4 w-4" />
-                </Button>
+              <div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    className={`pt-1  text-xl rounded-full text-center hover:bg-opacity-80 ${theme === "light" ? "border-white" : "border-red-800"}`}
+                    variant="outline"
+                    onClick={decrementQuantity}
+                  >
+                    -
+                  </Button>
+                  <Input
+                    className={`w-14 rounded-full text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${theme === "light" ? "border-black" : "border-red-800"}`}
+                    max="99"
+                    min="1"
+                    type="number"
+                    value={quantity}
+                    onChange={handleQuantityChange}
+                  />
+                  <Button
+                    className={`  text-xl rounded-full text-center hover:bg-opacity-80 ${theme === "light" ? "border-white" : "border-red-800"}`}
+                    variant="outline"
+                    onClick={incrementQuantity}
+                  >
+                    <p>+ </p>
+                  </Button>
+                </div>
               </div>
               <span className="font-semibold">550 EGP</span>
             </div>

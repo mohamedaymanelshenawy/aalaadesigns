@@ -198,7 +198,7 @@ export default function ProductDetailPage() {
                 onChange={handleQuantityChange}
               />
               <Button
-                className={`pt-1  text-xl rounded-full text-center hover:bg-opacity-80 ${theme === "light" ? "border-white" : "border-red-800"}`}
+                className={`text-xl rounded-full text-center hover:bg-opacity-80 ${theme === "light" ? "border-white" : "border-red-800"}`}
                 variant="outline"
                 onClick={incrementQuantity}
               >

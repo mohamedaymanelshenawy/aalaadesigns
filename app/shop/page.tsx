@@ -1,13 +1,36 @@
 "use client";
-
-import { Button } from "@nextui-org/react";
 import * as React from "react";
-import { Select, SelectItem, SelectValue } from "@/components/custom-select";
+import {
+  Button,
+  ButtonGroup,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+} from "@nextui-org/react";
+
 import ProductCard from "@/components/ProductCard";
+import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
 export default function Shop() {
   const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
-  const [selectedValue, setSelectedValue] = React.useState("featured");
+  const [selectedOption, setSelectedOption] = React.useState(
+    new Set(["shirts"])
+  );
+
+  const descriptionsMap = {
+    Shirts: "All new shirts",
+    Dresses: "All new Dresses.",
+    Cardigans: "All new Cardigans.",
+  };
+
+  const labelsMap = {
+    shirts: "Choose new shirt",
+    dresses: "Choose new dress",
+    cardigans: "Choose new Cardigan",
+  };
+
+  const selectedOptionValue = Array.from(selectedOption)[0];
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -25,13 +48,43 @@ export default function Shop() {
         </nav>
         <div className="flex justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
           <p className="text-gray-600">SHOWING 19 of 110 RESULTS</p>
-          <Select defaultValue={selectedValue} onChange={setSelectedValue}>
-            <SelectValue placeholder="Sort by" />
-            <SelectItem value="featured">Featured</SelectItem>
-            <SelectItem value="price-low-high">Price: Low to High</SelectItem>
-            <SelectItem value="price-high-low">Price: High to Low</SelectItem>
-            <SelectItem value="newest">Newest</SelectItem>
-          </Select>
+          <ButtonGroup variant="flat">
+            <Button>{labelsMap[selectedOptionValue]}</Button>
+            <Dropdown placement="bottom-end">
+              <DropdownTrigger>
+                <Button isIconOnly>
+                  <ChevronDownIcon />
+                </Button>
+              </DropdownTrigger>
+              <DropdownMenu
+                disallowEmptySelection
+                aria-label="options"
+                className="max-w-[300px]"
+                selectedKeys={selectedOption}
+                selectionMode="single"
+                onSelectionChange={setSelectedOption}
+              >
+                <DropdownItem
+                  key="shirts"
+                  description={descriptionsMap["Shirts"]}
+                >
+                  {labelsMap["shirts"]}
+                </DropdownItem>
+                <DropdownItem
+                  key="dresses"
+                  description={descriptionsMap["Dresses"]}
+                >
+                  {labelsMap["dresses"]}
+                </DropdownItem>
+                <DropdownItem
+                  key="cardigans"
+                  description={descriptionsMap["Cardigans"]}
+                >
+                  {labelsMap["cardigans"]}
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          </ButtonGroup>
         </div>
       </div>
       <div className="flex-grow">

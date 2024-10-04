@@ -193,10 +193,8 @@ export default function CustomNavBar() {
                     </DropdownItem>
                     <DropdownItem key="settings">Settings</DropdownItem>
 
-                    {user.role === "admin" ? (
+                    {user.role === "admin" && (
                       <DropdownItem key="analytics">Analytics</DropdownItem>
-                    ) : (
-                      <div hidden={true} />
                     )}
 
                     <DropdownItem
@@ -266,7 +264,7 @@ export default function CustomNavBar() {
       <div
         className={`fixed inset-x-0 top-0 z-50 transform transition-transform duration-300 ease-in-out ${
           isMenuOpen ? "translate-y-0" : "-translate-y-full"
-        } flex flex-col bg-background/95 backdrop-blur-md text-foreground overflow-y-auto border-b border-border`}
+        } flex flex-col bg-background/95 backdrop-blur-3xl text-foreground overflow-y-auto border-b border-border`}
         style={{
           height: "100vh",
           maxHeight: "100vh",
@@ -304,7 +302,7 @@ export default function CustomNavBar() {
                   <div key={item} className="justify-center flex flex-wrap">
                     <Button
                       as={Link}
-                      className="w-full justify-between mb-2 py-3 text-lg font-semibold"
+                      className="w-full justify-between mb-2 py-3 text-lg font-semibold hover:bg-gray-200  hover:text-black rounded transition-all duration-1000"
                       color="primary"
                       href="#"
                       variant="flat"

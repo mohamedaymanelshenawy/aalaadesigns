@@ -17,6 +17,7 @@ export default function Signin() {
   const [formError, setFormError] = useState("");
   const router = useRouter();
   const { setUser } = useUser();
+  const [IsSigningin, setIsSigningin] = useState(false);
 
   const closeAlert = useCallback(() => {
     setError(false);
@@ -61,6 +62,7 @@ export default function Signin() {
   }, [handleSignIn]);
 
   async function signinUser(email: string, password: string): Promise<void> {
+    setIsSigningin(true);
     const myHeaders = new Headers();
 
     myHeaders.append("Content-Type", "application/json");
@@ -88,12 +90,15 @@ export default function Signin() {
         setUser(parsedJson[0]); // Update the user context
         setError(false);
         setFormError("");
+        setIsSigningin(false);
         router.push("../");
       } else {
+        setIsSigningin(false);
         setError(true);
       }
     } catch (error) {
       setError(true);
+      setIsSigningin(false);
     }
   }
 
@@ -142,7 +147,7 @@ export default function Signin() {
                       onValueChange={setPasswordValue}
                     />
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center text-sm space-y-2 sm:space-y-0">
-                      <Link className="text-blue-600" href="#">
+                      <Link className="text-blue-600" href="/Auth/sign-up">
                         No Account? Sign up
                       </Link>
                       <Link className="text-blue-600" href="#">
@@ -151,6 +156,7 @@ export default function Signin() {
                     </div>
                     <Button
                       disableRipple
+                      {...(IsSigningin ? { isLoading: true } : {})}
                       className="w-full rounded"
                       size="lg"
                       onClick={handleSignIn}
