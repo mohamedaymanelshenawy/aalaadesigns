@@ -6,7 +6,6 @@ import { Gorditas } from "next/font/google";
 import { useTheme } from "next-themes";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import { Image } from "@nextui-org/react";
 
 import "swiper/css";
 import "swiper/css/navigation";
@@ -92,7 +91,7 @@ export default function Home() {
     <div>
       <Card className="w-full mx-auto overflow-hidden relative">
         <div className="relative aspect-[16/7]">
-          <Image
+          <img
             alt="Summer Collection"
             className="absolute inset-0 w-full h-full object-cover object-center"
             src="/landing.png"
