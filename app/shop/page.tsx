@@ -1,4 +1,5 @@
 "use client";
+
 import * as React from "react";
 import {
   Button,
@@ -12,19 +13,21 @@ import {
 import ProductCard from "@/components/ProductCard";
 import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
+type SelectionOption = "shirts" | "dresses" | "cardigans";
+
 export default function Shop() {
   const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
-  const [selectedOption, setSelectedOption] = React.useState(
-    new Set(["shirts"])
-  );
+  const [selectedOption, setSelectedOption] = React.useState<
+    Set<SelectionOption>
+  >(() => new Set<SelectionOption>(["shirts"]));
 
-  const descriptionsMap = {
-    Shirts: "All new shirts",
-    Dresses: "All new Dresses.",
-    Cardigans: "All new Cardigans.",
+  const descriptionsMap: Record<SelectionOption, string> = {
+    shirts: "All new shirts",
+    dresses: "All new Dresses.",
+    cardigans: "All new Cardigans.",
   };
 
-  const labelsMap = {
+  const labelsMap: Record<SelectionOption, string> = {
     shirts: "Choose new shirt",
     dresses: "Choose new dress",
     cardigans: "Choose new Cardigan",
@@ -49,7 +52,11 @@ export default function Shop() {
         <div className="flex justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
           <p className="text-gray-600">SHOWING 19 of 110 RESULTS</p>
           <ButtonGroup variant="flat">
-            <Button>{labelsMap[selectedOptionValue]}</Button>
+            <Button>
+              {selectedOptionValue
+                ? labelsMap[selectedOptionValue]
+                : "Select option"}
+            </Button>
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
                 <Button isIconOnly>
@@ -62,26 +69,15 @@ export default function Shop() {
                 className="max-w-[300px]"
                 selectedKeys={selectedOption}
                 selectionMode="single"
-                onSelectionChange={setSelectedOption}
+                onSelectionChange={(keys) =>
+                  setSelectedOption(keys as Set<SelectionOption>)
+                }
               >
-                <DropdownItem
-                  key="shirts"
-                  description={descriptionsMap["Shirts"]}
-                >
-                  {labelsMap["shirts"]}
-                </DropdownItem>
-                <DropdownItem
-                  key="dresses"
-                  description={descriptionsMap["Dresses"]}
-                >
-                  {labelsMap["dresses"]}
-                </DropdownItem>
-                <DropdownItem
-                  key="cardigans"
-                  description={descriptionsMap["Cardigans"]}
-                >
-                  {labelsMap["cardigans"]}
-                </DropdownItem>
+                {(Object.keys(labelsMap) as SelectionOption[]).map((key) => (
+                  <DropdownItem key={key} description={descriptionsMap[key]}>
+                    {labelsMap[key]}
+                  </DropdownItem>
+                ))}
               </DropdownMenu>
             </Dropdown>
           </ButtonGroup>
@@ -92,9 +88,9 @@ export default function Shop() {
           {[...Array(8)].map((_, index) => (
             <ProductCard
               key={index}
-              isInCart
-              isLiked
               description="Beautiful Dress"
+              isInCart={true}
+              isLiked={true}
               name="Dress"
               price="500"
             />

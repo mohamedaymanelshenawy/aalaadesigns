@@ -193,8 +193,10 @@ export default function CustomNavBar() {
                     </DropdownItem>
                     <DropdownItem key="settings">Settings</DropdownItem>
 
-                    {user.role === "admin" && (
-                      <DropdownItem key="analytics">Analytics</DropdownItem>
+                    {user.role === "admin" ? (
+                      <DropdownItem key="analytics">Dashborad</DropdownItem>
+                    ) : (
+                      <DropdownItem key="analytics">My orders</DropdownItem>
                     )}
 
                     <DropdownItem
