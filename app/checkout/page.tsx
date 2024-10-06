@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { CreditCard, Truck, AlertCircle } from "lucide-react";
+import { Image } from "@nextui-org/react";
 // Input component
 import {
   InputHTMLAttributes,
@@ -200,7 +201,7 @@ export default function ModernCheckoutPage() {
                       className="flex items-center space-x-3 cursor-pointer"
                       htmlFor="paypal"
                     >
-                      <img
+                      <Image
                         alt="PayPal"
                         className="h-6 w-6"
                         src="/placeholder.svg?height=24&width=24"

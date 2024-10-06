@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTheme } from "next-themes";
+import { Image } from "@nextui-org/react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -48,7 +49,7 @@ const ProductImage = ({
   alt: string;
   className?: string;
 }) => (
-  <img
+  <Image
     alt={alt}
     className={`object-cover rounded-lg shadow-md transition-transform duration-300 ${className}`}
     src={src}
