@@ -194,7 +194,15 @@ export default function CustomNavBar() {
                     <DropdownItem key="settings">Settings</DropdownItem>
 
                     {user.role === "admin" ? (
-                      <DropdownItem key="analytics">Dashborad</DropdownItem>
+                      <DropdownItem
+                        key="analytics"
+                        onClick={() =>
+                          (window.location.href =
+                            "https://aalaadesigns-dashboard.vercel.app/")
+                        }
+                      >
+                        Dashborad
+                      </DropdownItem>
                     ) : (
                       <DropdownItem key="analytics">My orders</DropdownItem>
                     )}

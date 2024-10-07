@@ -34,15 +34,13 @@ CardHeader.displayName = "CardHeader";
 const CardTitle = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, "aria-label": ariaLabel, ...props }, ref) => (
+>(({ className, ...props }, ref) => (
+  // eslint-disable-next-line jsx-a11y/heading-has-content
   <h3
     ref={ref}
-    aria-label={ariaLabel}
     className={cn("font-semibold leading-none tracking-tight", className)}
     {...props}
-  >
-    {props.children || "Default Heading"}
-  </h3>
+  />
 ));
 
 CardTitle.displayName = "CardTitle";

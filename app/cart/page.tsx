@@ -26,12 +26,12 @@ export default function CartPage() {
       <h1 className="text-3xl font-bold text-center mb-8 mt-0">CART</h1>
       <div className="grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-4 border-b border-gray-200">
             <span className="font-semibold">Product</span>
             <span className="font-semibold">Quantity</span>
             <span className="font-semibold">Subtotal</span>
           </div>
-          <div className="border-t border-gray-200 py-4">
+          <div className=" py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
                 <Image
