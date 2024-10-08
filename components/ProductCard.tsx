@@ -10,15 +10,40 @@ interface CategoryCardProps {
   price?: string;
   isLiked: boolean;
   isInCart: boolean;
+  image_path: string;
 }
 
 function ProductCard({
   name,
   description,
   price,
-  //isLiked = false,
-  //isInCart = false,
+  isLiked = false,
+  isInCart = false,
+  image_path,
 }: CategoryCardProps) {
+  //const addToCart = async () => {
+  //  try {
+  //    const response = await fetch("/api/cart/add", {
+  //      method: "POST",
+  //      headers: {
+  //        "Content-Type": "application/json",
+  //      },
+  //      body: JSON.stringify({ id, name, price }),
+  //    });
+
+  //    if (!response.ok) {
+  //      throw new Error("Failed to add product to cart");
+  //    }
+
+  //    const result = await response.json();
+  //    console.log(result.message);
+  //    // You could update some state here to show a success message or update the cart count
+  //  } catch (error) {
+  //    console.error("Error adding product to cart:", error);
+  //    // You could update some state here to show an error message
+  //  }
+  //};
+
   return (
     <>
       <Card
@@ -39,15 +64,15 @@ function ProductCard({
           <div className="absolute top-3 right-1 p-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
             <Button
               isIconOnly
-              className="text-red-500 p-1 hover:bg-none fill-red-500 scale-[1.35]"
+              className="text-red-500 p-1 hover:bg-none scale-[1.35]"
               variant="light"
             >
-              <HeartIcon />
+              <HeartIcon IsLiked={isLiked} />
             </Button>
           </div>
           <div className="absolute bottom-3 right-0 py-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
             <Button className="text-white" variant="light">
-              <Shoppingbag />
+              <Shoppingbag IsInCart={isInCart} />
             </Button>
           </div>
         </div>

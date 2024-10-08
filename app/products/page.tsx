@@ -1,6 +1,7 @@
+/* eslint-disable no-console */
 "use client";
 
-import * as React from "react";
+import { useEffect, useState } from "react";
 import {
   Button,
   ButtonGroup,
@@ -10,16 +11,66 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 
+import styles from "./products.module.css";
+
 import ProductCard from "@/components/ProductCard";
 import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
 type SelectionOption = "shirts" | "dresses" | "cardigans";
 
+type Product = {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  createdat: string;
+  image_path: string;
+  id: number;
+  categoryid: number;
+  material: string;
+  subcategoryid: number;
+};
+
+const LoadingAnimation = () => (
+  <div className={styles.loadingContainer}>
+    {[0, 1, 2].map((index) => (
+      <div
+        key={index}
+        className={styles.loadingDot}
+        style={{
+          animationDelay: `${index * 0.2}s`,
+        }}
+      />
+    ))}
+  </div>
+);
+
 export default function Shop() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setIsLoading(true);
+        const response = await fetch("/api/products");
+        const data = await response.json();
+
+        setProducts(data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
+
   const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
-  const [selectedOption, setSelectedOption] = React.useState<
-    Set<SelectionOption>
-  >(() => new Set<SelectionOption>(["shirts"]));
+  const [selectedOption, setSelectedOption] = useState<Set<SelectionOption>>(
+    () => new Set<SelectionOption>(["shirts"])
+  );
 
   const descriptionsMap: Record<SelectionOption, string> = {
     shirts: "All new shirts",
@@ -50,7 +101,9 @@ export default function Shop() {
           ))}
         </nav>
         <div className="flex justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
-          <p className="text-gray-600">SHOWING 19 of 110 RESULTS</p>
+          <p className="text-gray-600">
+            SHOWING {products.length} of 110 RESULTS
+          </p>
           <ButtonGroup variant="flat">
             <Button>
               {selectedOptionValue
@@ -85,16 +138,25 @@ export default function Shop() {
       </div>
       <div className="flex-grow">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-8 mx-auto mb-5">
-          {[...Array(8)].map((_, index) => (
-            <ProductCard
-              key={index}
-              description="Beautiful Dress"
-              isInCart={true}
-              isLiked={true}
-              name="Dress"
-              price="500"
-            />
-          ))}
+          {isLoading ? (
+            <div className="col-span-full flex justify-center items-center h-64">
+              <LoadingAnimation />
+            </div>
+          ) : products.length > 0 ? (
+            products.map((product) => (
+              <ProductCard
+                key={product.id}
+                description={product.description}
+                image_path={product.image_path}
+                isInCart={true}
+                isLiked={false}
+                name={product.name}
+                price={`${product.price}`}
+              />
+            ))
+          ) : (
+            <div className="col-span-full text-center">No products found</div>
+          )}
         </div>
       </div>
     </div>

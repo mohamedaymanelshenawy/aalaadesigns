@@ -1,9 +1,9 @@
-function Shoppingbag() {
+function Shoppingbag({ IsInCart }: { IsInCart: boolean }) {
   return (
     <>
       <svg
         className="size-6"
-        fill={"currentColor"}
+        fill={IsInCart ? "white" : "none"}
         stroke="currentColor"
         strokeWidth="1.5"
         viewBox="0 0 24 24"

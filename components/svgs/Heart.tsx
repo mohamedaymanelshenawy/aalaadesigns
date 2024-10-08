@@ -1,12 +1,10 @@
 import React from "react";
-interface HeartIconProps {
-  isLiked?: boolean;
-}
-function HeartIcon({ isLiked }: HeartIconProps) {
+
+function HeartIcon({ IsLiked }: { IsLiked: boolean }) {
   return (
     <svg
       className="size-6"
-      fill={isLiked ? "red" : "none"}
+      fill={IsLiked ? "red" : "none"}
       stroke="currentColor"
       strokeWidth="1.5"
       viewBox="0 0 24 24"

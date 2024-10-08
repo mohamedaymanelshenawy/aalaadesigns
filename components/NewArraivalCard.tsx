@@ -40,7 +40,7 @@ function NewArraivalCard({
 
           <div className="absolute bottom-3 right-0 py-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
             <Button className="text-white" variant="light">
-              <Shoppingbag />
+              <Shoppingbag IsInCart={false} />
             </Button>
           </div>
         </div>

@@ -16,7 +16,7 @@ export const siteConfig = {
     },
     {
       label: "Shop",
-      href: "/shop",
+      href: "/products",
     },
   ],
   navMenuItems: [
@@ -26,20 +26,9 @@ export const siteConfig = {
     },
     {
       label: "Dashboard",
-      href: "/dashboard",
+      href: "https://aalaadesigns-dashboard.com",
     },
-    {
-      label: "Projects",
-      href: "/projects",
-    },
-    {
-      label: "Team",
-      href: "/team",
-    },
-    {
-      label: "Calendar",
-      href: "/calendar",
-    },
+
     {
       label: "Settings",
       href: "/settings",

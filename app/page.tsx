@@ -108,7 +108,7 @@ export default function Home() {
               <Button
                 as={Link}
                 className="bg-black text-white hover:bg-gray-900 hover:opacity-60 transition-colors group px-6 py-3"
-                href="/shop"
+                href="/products"
               >
                 Shop Now
                 <span className="ml-2 bg-white rounded-full p-1 inline-flex items-center justify-center">
