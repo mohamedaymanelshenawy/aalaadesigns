@@ -1,8 +1,41 @@
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
 
-export async function GET() {
-  const result = await sql`SELECT * FROM products LIMIT 30`;
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url);
+  const limit = 30; // Number of products per page
+  const page = parseInt(searchParams.get("page") || "1", 10); // Get the page number, default to 1
+  const offset = (page - 1) * limit; // Calculate the offset based on the page number
 
-  return NextResponse.json(result.rows);
+  try {
+    // Fetch the total number of products
+    const totalCountResult = await sql`SELECT COUNT(*) FROM products`;
+    const totalProducts = parseInt(totalCountResult.rows[0].count, 10);
+
+    // Fetch the products for the current page
+    const { rows } = await sql`
+      SELECT * FROM products
+      ORDER BY createdat
+      OFFSET ${offset}
+      LIMIT ${limit};
+    `;
+
+    // Calculate total pages and next page
+    const totalPages = Math.ceil(totalProducts / limit);
+    const nextPage = page < totalPages ? page + 1 : null;
+
+    return NextResponse.json({
+      products: rows,
+      currentPage: page,
+      totalProducts: totalProducts,
+      totalPages: totalPages,
+      nextPage: nextPage,
+      limit: limit,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Error fetching products" },
+      { status: 500 }
+    );
+  }
 }

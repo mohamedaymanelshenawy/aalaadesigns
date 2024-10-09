@@ -13,6 +13,14 @@ import {
 
 import styles from "./products.module.css";
 
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import ProductCard from "@/components/ProductCard";
 import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
@@ -48,15 +56,21 @@ const LoadingAnimation = () => (
 export default function Shop() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalProducts, setTotalProducts] = useState(0);
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         setIsLoading(true);
-        const response = await fetch("/api/products");
+        const response = await fetch(`/api/products?page=${page}`);
         const data = await response.json();
 
-        setProducts(data);
+        setProducts(data.products);
+        setTotalProducts(data.totalProducts);
+
+        setTotalPages(data.totalPages);
       } catch (error) {
         console.error("Failed to fetch products:", error);
       } finally {
@@ -65,7 +79,7 @@ export default function Shop() {
     }
 
     fetchProducts();
-  }, []);
+  }, [page]);
 
   const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
   const [selectedOption, setSelectedOption] = useState<Set<SelectionOption>>(
@@ -86,6 +100,10 @@ export default function Shop() {
 
   const selectedOptionValue = Array.from(selectedOption)[0];
 
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="w-full">
@@ -102,7 +120,7 @@ export default function Shop() {
         </nav>
         <div className="flex justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
           <p className="text-gray-600">
-            SHOWING {products.length} of 110 RESULTS
+            SHOWING {products.length} of {totalProducts} RESULTS
           </p>
           <ButtonGroup variant="flat">
             <Button>
@@ -158,6 +176,37 @@ export default function Shop() {
             <div className="col-span-full text-center">No products found</div>
           )}
         </div>
+      </div>
+      <div className="flex justify-center mt-8 mb-8">
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                className={`mr-2 cursor-pointer ${page === 1 ? "hidden" : null} `}
+                onClick={() => handlePageChange(page - 1)}
+              />
+            </PaginationItem>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+              (pageNumber) => (
+                <PaginationItem key={pageNumber}>
+                  <PaginationLink
+                    className="cursor-pointer mx-1"
+                    isActive={pageNumber === page}
+                    onClick={() => handlePageChange(pageNumber)}
+                  >
+                    {pageNumber}
+                  </PaginationLink>
+                </PaginationItem>
+              )
+            )}
+            <PaginationItem>
+              <PaginationNext
+                className={`cursor-pointer ml-2 ${page === totalPages ? "hidden" : null} `}
+                onClick={() => handlePageChange(page + 1)}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
       </div>
     </div>
   );

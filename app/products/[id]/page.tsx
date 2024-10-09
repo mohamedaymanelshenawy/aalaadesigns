@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-console */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -52,6 +54,7 @@ export default function ProductDetailPage() {
       try {
         const productResponse = await fetch(`/api/products/product?id=${id}`);
         const productData = await productResponse.json();
+
         setProduct(productData);
         //setSelectedSize(productData.sizes[0]);
         //setSelectedColor(productData.colors[0]);
