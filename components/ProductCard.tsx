@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
-import { Card, Button } from "@nextui-org/react";
 
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import HeartIcon from "@/components/svgs/Heart";
 import Shoppingbag from "@/components/svgs/Shoppingbag";
 
@@ -12,6 +13,7 @@ interface CategoryCardProps {
   isLiked: boolean;
   isInCart: boolean;
   image_path: string;
+  link: string;
 }
 
 function ProductCard({
@@ -21,6 +23,7 @@ function ProductCard({
   isLiked = false,
   isInCart = false,
   image_path,
+  link,
 }: CategoryCardProps) {
   //const addToCart = async () => {
   //  try {
@@ -48,35 +51,39 @@ function ProductCard({
   return (
     <>
       <Card
-        disableRipple
-        isHoverable
-        className="w-[20rem] h-[32rem] flex flex-col bg-white bg-opacity-none  justify-center bg-cover bg-center hover:shadow-xl hover:scale-[1.01] transform transition-transform duration-300"
+        className="w-[20rem] h-[32rem] flex flex-col bg-white bg-opacity-none rounded overflow-clip justify-center bg-cover bg-center hover:shadow-xl hover:scale-[1.01] transform transition-transform duration-300"
         style={{
           backgroundImage: "url('/shirt.png')",
         }}
       >
-        <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
-          <div className="absolute bottom-0 left-0 right-0 p-2 rounded-md text-black w-11/12 text-left m-auto z-20 ">
-            <p className="text-lg  text-white">{name}</p>
-            <p className="text-md font-extralight text-white">{description}</p>
-            <p className="text-xl font-bold text-white">{price} EGP</p>
-          </div>
-          <div className="absolute top-3 right-1 p-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
-            <Button
-              isIconOnly
-              className="text-red-500 p-1 hover:bg-none scale-[1.35]"
-              variant="light"
-            >
-              <HeartIcon IsLiked={isLiked} />
-            </Button>
-          </div>
-          <div className="absolute bottom-3 right-0 py-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
-            <Button className="text-white" variant="light">
-              <Shoppingbag IsInCart={isInCart} />
-            </Button>
-          </div>
-        </div>
+        <a href={link} rel="noopener noreferrer">
+          <CardContent className="rounded overflow-hidden">
+            <div className="absolute inset-0">
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
+              <div className="absolute bottom-0 left-0 right-0 p-2 rounded-md text-black w-11/12 text-left m-auto z-20 ">
+                <p className="text-lg  text-white">{name}</p>
+                <p className="text-md font-extralight text-white">
+                  {description}
+                </p>
+                <p className="text-xl font-bold text-white">{price} EGP</p>
+              </div>
+              <div className="absolute top-3 right-1 p-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
+                <Button
+                  className="text-red-500 p-1 hover:bg-none scale-[1.35]"
+                  size="icon"
+                  variant="ghost"
+                >
+                  <HeartIcon IsLiked={isLiked} />
+                </Button>
+              </div>
+              <div className="absolute bottom-3 right-0 py-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
+                <Button className="text-white" size="icon" variant="ghost">
+                  <Shoppingbag IsInCart={isInCart} />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </a>
       </Card>
     </>
   );

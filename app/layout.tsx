@@ -13,6 +13,7 @@ import Footer from "./footer/footer";
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
 import CustomNavBar from "@/components/navbar";
+import "@/styles/globals.css";
 
 export const metadata: Metadata = {
   title: {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 "use client";
 
@@ -103,6 +104,9 @@ export default function Shop() {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
+  const handleProductClick = (productId: number) => {
+    console.log("Product clicked", productId);
+  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -168,6 +172,7 @@ export default function Shop() {
                 image_path={product.image_path}
                 isInCart={true}
                 isLiked={false}
+                link={`/products/${product.id}`}
                 name={product.name}
                 price={`${product.price}`}
               />

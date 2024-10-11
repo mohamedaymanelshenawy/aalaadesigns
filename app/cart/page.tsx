@@ -1,25 +1,125 @@
 "use client";
-//import  from "next/image";
-import { useState } from "react";
-import { Image } from "@nextui-org/react";
-import { useTheme } from "next-themes";
 
-import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
+import { Loader2, AlertCircle, ShoppingCart } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
+import CartItem from "@/components/cartitem";
+import { useUser } from "@/app/contexts/UserContext";
 
-export default function CartPage() {
-  const [quantity, setQuantity] = useState(1);
-  const { theme } = useTheme();
-  const incrementQuantity = () => setQuantity((prev) => Math.min(prev + 1, 99));
-  const decrementQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
+type CartItem = {
+  id: number;
+  product_name: string;
+  price: number;
+  stock: number;
+  material: string;
+  createdat: string;
+  categoryid: number;
+  image_path: string;
+  description: string;
+  subcategoryid: number;
+  count: number;
+};
 
-  const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(e.target.value);
+type Cart = {
+  id: number;
+  items: CartItem[];
+};
 
-    if (!isNaN(value) && value >= 1 && value <= 99) {
-      setQuantity(value);
+export default function Cart() {
+  const { user } = useUser();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [cart, setCart] = useState<Cart | null>(null);
+
+  useEffect(() => {
+    async function fetchCartItems() {
+      if (!user || !user.id) {
+        setError("User not found");
+        setIsLoading(false);
+
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(`/api/cart?userId=${user.id}`, {
+          method: "GET",
+          redirect: "follow",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch cart items");
+        }
+
+        const result = await response.json();
+
+        setCart(result);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchCartItems();
+  }, [user]);
+
+  const handleQuantityChange = (itemId: number, newQuantity: number) => {
+    if (cart) {
+      const updatedItems = cart.items.map((item) =>
+        item.id === itemId ? { ...item, count: newQuantity } : item
+      );
+
+      setCart({ ...cart, items: updatedItems });
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Loader2 className="w-16 h-16 text-black animate-spin" />
+        <p className="mt-4 text-xl font-semibold text-white animate-pulse">
+          Loading your cart...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-red-500 to-yellow-500">
+        <AlertCircle className="w-16 h-16 text-white" />
+        <p className="mt-4 text-xl font-semibold text-white">Oops! {error}</p>
+        <Button className="mt-4 bg-white text-red-500 hover:bg-red-100">
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-teal-500">
+        <ShoppingCart className="w-16 h-16 text-white" />
+        <p className="mt-4 text-xl font-semibold text-white">
+          Your cart is empty
+        </p>
+        <Button className="mt-4 bg-white text-blue-500 hover:bg-blue-100">
+          Start Shopping
+        </Button>
+      </div>
+    );
+  }
+
+  const subtotal = cart.items.reduce(
+    (sum, item) => sum + item.price * item.count,
+    0
+  );
+  const shipping = 30; // Assuming flat rate shipping
+  const total = subtotal + shipping;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -31,71 +131,45 @@ export default function CartPage() {
             <span className="font-semibold">Quantity</span>
             <span className="font-semibold">Subtotal</span>
           </div>
-          <div className=" py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <Image
-                  alt="Basic colored Dress"
-                  className="rounded"
-                  height={80}
-                  src="/shirt.png"
-                  width={80}
-                />
-                <div>
-                  <h3 className="font-semibold">Basic colored Dress</h3>
-                  <div className="flex items-center space-x-2 mt-1">
-                    <div className="w-4 h-4 rounded-full bg-pink-500" />
-                    <span className="text-sm">L</span>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    className={`pt-1  text-xl rounded-full text-center hover:bg-opacity-80 ${theme === "light" ? "border-white" : "border-red-800"}`}
-                    variant="outline"
-                    onClick={decrementQuantity}
-                  >
-                    -
-                  </Button>
-                  <Input
-                    className={`w-14 rounded-full text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${theme === "light" ? "border-black" : "border-red-800"}`}
-                    max="99"
-                    min="1"
-                    type="number"
-                    value={quantity}
-                    onChange={handleQuantityChange}
-                  />
-                  <Button
-                    className={`  text-xl rounded-full text-center hover:bg-opacity-80 ${theme === "light" ? "border-white" : "border-red-800"}`}
-                    variant="outline"
-                    onClick={incrementQuantity}
-                  >
-                    <p>+ </p>
-                  </Button>
-                </div>
-              </div>
-              <span className="font-semibold">550 EGP</span>
-            </div>
-          </div>
+          {cart.items.map((item) => (
+            <CartItem
+              key={item.id}
+              color="default"
+              imageSrc="shirt.png"
+              name={item.product_name}
+              price={`${item.price} EGP`}
+              quantity={item.count}
+              size="default"
+              onDecrement={() =>
+                handleQuantityChange(item.id, Math.max(item.count - 1, 1))
+              }
+              onIncrement={() => handleQuantityChange(item.id, item.count + 1)}
+              onQuantityChange={(e) => {
+                const value = parseInt(e.target.value);
+
+                if (!isNaN(value) && value >= 1 && value <= 99) {
+                  handleQuantityChange(item.id, value);
+                }
+              }}
+            />
+          ))}
         </div>
         <div className="md:col-span-1">
-          <div className=" p-6 rounded-sm ">
+          <div className="p-6 rounded-sm border border-gray-200">
             <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span>Subtotal</span>
-                <span>550 EGP</span>
+                <span>{subtotal.toFixed(2)} EGP</span>
               </div>
               <div className="flex justify-between items-center">
                 <span>Shipping</span>
-                <span className="text-sm">Flat rate</span>
+                <span className="text-sm">Flat rate: {shipping} EGP</span>
               </div>
               <div className="flex justify-between items-center font-semibold">
                 <span>Total</span>
-                <span>550 EGP</span>
+                <span>{total.toFixed(2)} EGP</span>
               </div>
-
               <Button className="w-full">CHECKOUT</Button>
             </div>
           </div>
