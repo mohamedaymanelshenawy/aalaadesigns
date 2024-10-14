@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -15,26 +14,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  description: string;
-  colors: string[];
+interface ColorAndSize {
+  color: string;
   sizes: string[];
-  images: string[];
+}
+
+interface Product {
+  product_id: number;
+  product_name: string;
+  description: string;
+  price: number;
+  stock: number;
+  createdat: string;
+  image_path: string;
+  categoryid: number;
   material: string;
-  inStock: boolean;
+  subcategoryid: number;
+  colors_and_sizes: ColorAndSize[];
 }
 
 interface RelatedProduct {
-  id: string;
+  id: number;
   name: string;
+  description: string;
   price: number;
-  image: string;
+  stock: number;
+  createdat: string;
+  image_path: string;
+  categoryid: number;
+  material: string;
+  subcategoryid: number;
 }
-const sizes = ["S", "M", "L", "XL", "XXL"];
-const colors = ["#FF0000", "#00FF00", "#0000FF"];
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -52,18 +62,19 @@ export default function ProductDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        const productResponse = await fetch(`/api/products/product?id=${id}`);
-        const productData = await productResponse.json();
+        const response = await fetch(`/api/products/product?id=${id}`);
+        const data = await response.json();
 
-        setProduct(productData);
-        //setSelectedSize(productData.sizes[0]);
-        //setSelectedColor(productData.colors[0]);
+        setProduct(data.product);
+        setRelatedProducts(data.relatedProducts);
 
-        //const relatedResponse = await fetch(`/api/products/${id}/related`);
-        //const relatedData = await relatedResponse.json();
-        //setRelatedProducts(relatedData);
+        try {
+          if (data.product.colors_and_sizes.length > 0) {
+            setSelectedColor(data.product.colors_and_sizes[0].color);
+            setSelectedSize(data.product.colors_and_sizes[0].sizes[0]);
+          }
+        } catch {}
       } catch (error) {
-        console.error("Failed to fetch data:", error);
         setError("Failed to load product data. Please try again later.");
       } finally {
         setLoading(false);
@@ -75,13 +86,14 @@ export default function ProductDetailPage() {
     }
   }, [id]);
 
-  const incrementQuantity = () => setQuantity((prev) => Math.min(prev + 1, 99));
+  const incrementQuantity = () =>
+    setQuantity((prev) => Math.min(prev + 1, product?.stock || 99));
   const decrementQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseInt(e.target.value);
 
-    if (!isNaN(value) && value >= 1 && value <= 99) {
+    if (!isNaN(value) && value >= 1 && value <= (product?.stock || 99)) {
       setQuantity(value);
     }
   };
@@ -125,30 +137,17 @@ export default function ProductDetailPage() {
       <div className="grid md:grid-cols-2 gap-12">
         <div className="space-y-6">
           <Image
-            alt={product.name}
+            alt={product.product_name}
             className="w-full h-[600px] rounded-xl object-cover"
             height={600}
-            //src={product.images[0]}
-            src="/arrival1.png"
+            //src={product.image_path}
+            src="/shirt.png"
             width={600}
           />
-          <div className="grid grid-cols-3 gap-4">
-            {/*{product.images.slice(1, 4).map((image, index) => (
-              <div key={index} className="rounded overflow-hidden">
-                <Image
-                  alt={`${product.name} thumbnail ${index + 1}`}
-                  className="w-full h-56 rounded object-cover"
-                  height={224}
-                  src={image}
-                  width={200}
-                />
-              </div>
-            ))}*/}
-          </div>
         </div>
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+            <h1 className="text-3xl font-bold mb-2">{product.product_name}</h1>
             <p className="text-2xl font-semibold">{product.price} EGP</p>
           </div>
           <div>
@@ -158,17 +157,17 @@ export default function ProductDetailPage() {
               defaultValue={selectedColor}
               onValueChange={setSelectedColor}
             >
-              {colors.map((color, index) => (
+              {product.colors_and_sizes.map((colorSize, index) => (
                 <div key={index}>
                   <RadioGroupItem
                     className="sr-only peer"
                     id={`color-${index}`}
-                    value={color}
+                    value={colorSize.color}
                   />
                   <Label className="cursor-pointer" htmlFor={`color-${index}`}>
                     <div
                       className="w-8 h-8 rounded-full border-2 border-gray-300 hover:border-black transition-colors duration-200 peer-checked:border-black"
-                      style={{ backgroundColor: color }}
+                      style={{ backgroundColor: colorSize.color.toLowerCase() }}
                     />
                   </Label>
                 </div>
@@ -177,7 +176,7 @@ export default function ProductDetailPage() {
           </div>
           <div>
             <h2 className="text-lg font-semibold mb-2">
-              🟢 Available in Stock
+              {product.stock > 0 ? "🟢 Available in Stock" : "🔴 Out of Stock"}
             </h2>
             <p>Material: {product.material}</p>
           </div>
@@ -188,21 +187,23 @@ export default function ProductDetailPage() {
               defaultValue={selectedSize}
               onValueChange={setSelectedSize}
             >
-              {sizes.map((size) => (
-                <div key={size}>
-                  <RadioGroupItem
-                    className="sr-only peer"
-                    id={`size-${size}`}
-                    value={size}
-                  />
-                  <Label
-                    className="px-4 py-2 border-2 rounded-full transition-colors duration-400 cursor-pointer peer-checked:border-primary hover:border-primary"
-                    htmlFor={`size-${size}`}
-                  >
-                    {size}
-                  </Label>
-                </div>
-              ))}
+              {product.colors_and_sizes
+                .find((cs) => cs.color === selectedColor)
+                ?.sizes.map((size) => (
+                  <div key={size}>
+                    <RadioGroupItem
+                      className="sr-only peer"
+                      id={`size-${size}`}
+                      value={size}
+                    />
+                    <Label
+                      className="px-4 py-2 border-2 rounded-full transition-colors duration-400 cursor-pointer peer-checked:border-primary hover:border-primary"
+                      htmlFor={`size-${size}`}
+                    >
+                      {size}
+                    </Label>
+                  </div>
+                ))}
             </RadioGroup>
           </div>
           <div>
@@ -218,7 +219,7 @@ export default function ProductDetailPage() {
               </Button>
               <Input
                 className="w-14 rounded-full text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                max="99"
+                max={product.stock}
                 min="1"
                 type="number"
                 value={quantity}
@@ -235,10 +236,15 @@ export default function ProductDetailPage() {
             </div>
           </div>
           <div className="space-y-4">
-            <Button className="w-full" size="lg">
+            <Button className="w-full" disabled={product.stock === 0} size="lg">
               Add to Cart
             </Button>
-            <Button className="w-full" size="lg" variant="secondary">
+            <Button
+              className="w-full"
+              disabled={product.stock === 0}
+              size="lg"
+              variant="secondary"
+            >
               Buy Now
             </Button>
           </div>
@@ -261,13 +267,14 @@ export default function ProductDetailPage() {
           <h2 className="text-2xl font-bold mb-6">You may also like</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {relatedProducts.map((product) => (
-              <Card key={product.id}>
+              <Card key={product.id} className="rounded overflow-clip">
                 <CardContent className="p-0">
                   <Image
                     alt={product.name}
                     className="w-full h-60 object-cover object-top"
                     height={240}
-                    src={product.image}
+                    //src={product.image_path}
+                    src="/shirt.png"
                     width={300}
                   />
                   <div className="p-4">

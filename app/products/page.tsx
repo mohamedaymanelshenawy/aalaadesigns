@@ -169,9 +169,9 @@ export default function Shop() {
               <ProductCard
                 key={product.id}
                 description={product.description}
+                id={product.id}
                 image_path={product.image_path}
-                isInCart={true}
-                isLiked={false}
+                isInCart={false}
                 link={`/products/${product.id}`}
                 name={product.name}
                 price={`${product.price}`}

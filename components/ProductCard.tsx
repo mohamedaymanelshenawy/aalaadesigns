@@ -1,92 +1,96 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import HeartIcon from "@/components/svgs/Heart";
 import Shoppingbag from "@/components/svgs/Shoppingbag";
 
-interface CategoryCardProps {
+interface ProductCardProps {
+  id: number;
   name: string;
   description?: string;
-  price?: string;
-  isLiked: boolean;
+  price: string;
   isInCart: boolean;
   image_path: string;
   link: string;
 }
 
-function ProductCard({
+export default function ProductCard({
+  id,
   name,
   description,
   price,
-  isLiked = false,
   isInCart = false,
   image_path,
   link,
-}: CategoryCardProps) {
-  //const addToCart = async () => {
-  //  try {
-  //    const response = await fetch("/api/cart/add", {
-  //      method: "POST",
-  //      headers: {
-  //        "Content-Type": "application/json",
-  //      },
-  //      body: JSON.stringify({ id, name, price }),
-  //    });
+}: ProductCardProps) {
+  const [isCarted, setIsCarted] = useState(false);
 
-  //    if (!response.ok) {
-  //      throw new Error("Failed to add product to cart");
-  //    }
+  const addToCart = async () => {
+    try {
+      const response = await fetch("/api/cart/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, name, price }),
+      });
 
-  //    const result = await response.json();
-  //    console.log(result.message);
-  //    // You could update some state here to show a success message or update the cart count
-  //  } catch (error) {
-  //    console.error("Error adding product to cart:", error);
-  //    // You could update some state here to show an error message
-  //  }
-  //};
+      if (!response.ok) {
+        throw new Error("Failed to add product to cart");
+      }
+
+      const result = await response.json();
+
+      // You could update some state here to show a success message or update the cart count
+    } catch (error) {
+      // You could update some state here to show an error message
+    }
+  };
+
+  const handleCartClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCarted(!isCarted);
+    addToCart();
+  };
 
   return (
-    <>
-      <Card
-        className="w-[20rem] h-[32rem] flex flex-col bg-white bg-opacity-none rounded overflow-clip justify-center bg-cover bg-center hover:shadow-xl hover:scale-[1.01] transform transition-transform duration-300"
-        style={{
-          backgroundImage: "url('/shirt.png')",
-        }}
-      >
-        <a href={link} rel="noopener noreferrer">
-          <CardContent className="rounded overflow-hidden">
-            <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black" />
-              <div className="absolute bottom-0 left-0 right-0 p-2 rounded-md text-black w-11/12 text-left m-auto z-20 ">
-                <p className="text-lg  text-white">{name}</p>
-                <p className="text-md font-extralight text-white">
-                  {description}
-                </p>
-                <p className="text-xl font-bold text-white">{price} EGP</p>
-              </div>
-              <div className="absolute top-3 right-1 p-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
-                <Button
-                  className="text-red-500 p-1 hover:bg-none scale-[1.35]"
-                  size="icon"
-                  variant="ghost"
-                >
-                  <HeartIcon IsLiked={isLiked} />
-                </Button>
-              </div>
-              <div className="absolute bottom-3 right-0 py-2 rounded-md w-11/12 text-right text-white m-auto z-20 mt-auto">
-                <Button className="text-white" size="icon" variant="ghost">
-                  <Shoppingbag IsInCart={isInCart} />
-                </Button>
-              </div>
+    <Card className="overflow-hidden transition-all hover:shadow-lg h-[400px] flex flex-col">
+      <Link className="flex-grow" href={link}>
+        <CardContent className="p-0 h-full flex flex-col">
+          <div className="h-[80%] relative">
+            <Image
+              alt={name}
+              className="w-full"
+              layout="fill"
+              objectFit="cover"
+              objectPosition="top"
+              src="/shirt.png"
+            />
+          </div>
+          <div className="p-4 flex-grow flex flex-col justify-between">
+            <div>
+              <h3 className="font-semibold text-lg">{name}</h3>
+              {description && (
+                <p className="text-sm text-gray-600 mt-1">{description}</p>
+              )}
             </div>
-          </CardContent>
-        </a>
-      </Card>
-    </>
+            <div className="flex justify-between items-center mt-2">
+              <p className="font-bold">{price} EGP</p>
+              <Button
+                className="flex items-center justify-center"
+                size="icon"
+                onClick={handleCartClick}
+              >
+                <Shoppingbag IsInCart={isCarted} />
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Link>
+    </Card>
   );
 }
-
-export default ProductCard;
