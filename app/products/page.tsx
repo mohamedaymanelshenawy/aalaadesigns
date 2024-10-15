@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Button,
@@ -40,21 +40,23 @@ type Product = {
   subcategoryid: number;
 };
 
-const LoadingAnimation = () => (
-  <div className="flex justify-center items-center space-x-2">
-    {[0, 1, 2].map((index) => (
-      <div
-        key={index}
-        className="w-3 h-3 bg-gray-500 rounded-full animate-bounce"
-        style={{
-          animationDelay: `${index * 0.2}s`,
-        }}
-      />
-    ))}
-  </div>
-);
+function LoadingAnimation() {
+  return (
+    <div className="flex justify-center items-center space-x-2">
+      {[0, 1, 2].map((index) => (
+        <div
+          key={index}
+          className="w-3 h-3 bg-gray-500 rounded-full animate-bounce"
+          style={{
+            animationDelay: `${index * 0.2}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
-export default function Shop() {
+function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -221,7 +223,9 @@ export default function Shop() {
             )}
             <PaginationItem>
               <PaginationNext
-                className={`cursor-pointer ml-2 ${page === totalPages ? "hidden" : ""}`}
+                className={`cursor-pointer ml-2 ${
+                  page === totalPages ? "hidden" : ""
+                }`}
                 onClick={() => handlePageChange(page + 1)}
               />
             </PaginationItem>
@@ -229,5 +233,13 @@ export default function Shop() {
         </Pagination>
       </div>
     </div>
+  );
+}
+
+export default function Shop() {
+  return (
+    <Suspense fallback={<LoadingAnimation />}>
+      <ShopContent />
+    </Suspense>
   );
 }
