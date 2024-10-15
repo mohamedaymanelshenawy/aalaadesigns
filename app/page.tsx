@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { useEffect } from "react";
+
+import { useEffect, useState } from "react";
 import { Card, Button, Link } from "@nextui-org/react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Gorditas } from "next/font/google";
@@ -18,24 +20,16 @@ import NewArraivalCard from "@/components/NewArraivalCard";
 
 import "../styles/globals.css";
 
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+}
+
 const gorditas = Gorditas({
   subsets: ["latin"],
   weight: ["400", "700"],
 });
-
-const categories = [
-  { name: "Basics", imagePath: "/arrival1.png", index: "1" },
-  { name: "Dresses", imagePath: "/dress.png", index: "2" },
-  { name: "Tops", imagePath: "/arrival2.png", index: "3" },
-  { name: "Skirts", imagePath: "/shirt.png", index: "4" },
-  { name: "Abayas", imagePath: "/arrival3.png", index: "5" },
-  { name: "Tunic", imagePath: "/arrival4.png", index: "6" },
-  { name: "Scarves", imagePath: "/cardigan.png", index: "7" },
-  { name: "Accessories", imagePath: "/dress.png", index: "8" },
-  { name: "Denim", imagePath: "/jupe.png", index: "9" },
-  { name: "Jackets/Coats/Blazers", imagePath: "/dress.png", index: "10" },
-  { name: "Hoodies/Sweaters", imagePath: "/dress.png", index: "11" },
-];
 
 const newArrivals = [
   {
@@ -64,29 +58,85 @@ const newArrivals = [
   },
 ];
 
-//type User = {
-//  email: string;
-//  password: string;
-//  id: number;
-//  createdat: string;
-//  username: string;
-//};
-
 export default function Home() {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { user, setUser } = useUser();
+  const [fetchedCategories, setFetchedCategories] = useState<Category[]>([]);
+  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const { theme } = useTheme();
+  const { user, setUser } = useUser();
+  const { theme, systemTheme } = useTheme();
+
+  async function fetchCategories() {
+    try {
+      const response = await fetch(`/api/products/categories`);
+      const data = await response.json();
+
+      setFetchedCategories(data);
+      setError(false);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   useEffect(() => {
-    if (typeof localStorage !== "undefined") {
+    if (typeof window !== "undefined") {
       const storedUser = localStorage.getItem("user");
 
       if (storedUser) {
         setUser(JSON.parse(storedUser));
       }
     }
-  }, []);
+    fetchCategories();
+  }, [setUser]);
+
+  const currentTheme = theme === "system" ? systemTheme : theme;
+
+  const SkeletonLoader = () => (
+    <div className="animate-pulse">
+      {/* Hero Section Skeleton */}
+      <div className="w-full h-[40vh] bg-gray-300 dark:bg-gray-700 mb-10" />
+
+      {/* Divider Skeleton */}
+      <div className="w-4/5 h-[1px] bg-gray-300 dark:bg-gray-700 mx-auto mb-10" />
+
+      {/* Categories Section Skeleton */}
+      <div className="max-w-[90rem] mx-auto text-center mb-10">
+        <div className="h-10 w-1/3 bg-gray-300 dark:bg-gray-700 mx-auto mb-4" />
+        <div className="h-6 w-2/3 bg-gray-300 dark:bg-gray-700 mx-auto mb-8" />
+        <div className="flex justify-center space-x-4">
+          {[...Array(3)].map((_, index) => (
+            <div
+              key={index}
+              className="w-64 h-64 bg-gray-300 dark:bg-gray-700 rounded-lg"
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Divider Skeleton */}
+      <div className="w-4/5 h-[1px] bg-gray-300 dark:bg-gray-700 mx-auto mb-10" />
+
+      {/* New Arrivals Section Skeleton */}
+      <div className="max-w-[91rem] mx-auto text-center">
+        <div className="h-10 w-1/3 bg-gray-300 dark:bg-gray-700 mx-auto mb-4" />
+        <div className="h-6 w-2/3 bg-gray-300 dark:bg-gray-700 mx-auto mb-8" />
+        <div className="flex justify-center space-x-4">
+          {[...Array(3)].map((_, index) => (
+            <div
+              key={index}
+              className="w-64 h-80 bg-gray-300 dark:bg-gray-700 rounded-lg"
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (isLoading) {
+    return <SkeletonLoader />;
+  }
 
   return (
     <div>
@@ -121,7 +171,9 @@ export default function Home() {
       </Card>
       <div className="mt-10 w-full flex justify-center">
         <div
-          className={`h-[1px] ${theme === "light" ? "bg-black" : "bg-white"}  w-4/5`}
+          className={`h-[1px] ${
+            currentTheme === "dark" ? "bg-white" : "bg-black"
+          } w-4/5`}
         />
       </div>
       <section className="py-8 px-4">
@@ -154,14 +206,19 @@ export default function Home() {
               pagination={{ clickable: true }}
               spaceBetween={20}
             >
-              {categories.map((category) => (
-                <SwiperSlide key={category.index}>
-                  <CategoryCard
-                    name={category.name}
-                    path={category.imagePath}
-                  />
-                </SwiperSlide>
-              ))}
+              {fetchedCategories.length > 0 ? (
+                fetchedCategories.map((category) => (
+                  <SwiperSlide key={category.id}>
+                    <CategoryCard
+                      id={category.id}
+                      name={category.name}
+                      path="/shirt.png"
+                    />
+                  </SwiperSlide>
+                ))
+              ) : (
+                <p>No categories found.</p>
+              )}
             </Swiper>
             <div className="swiper-button-prev absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
               <ChevronLeft className="w-8 h-8 text-gray-500" />
@@ -174,7 +231,9 @@ export default function Home() {
       </section>
       <div className="w-full flex justify-center">
         <div
-          className={`h-[1px] ${theme === "light" ? "bg-black" : "bg-white"}  w-4/5`}
+          className={`h-[1px] ${
+            currentTheme === "dark" ? "bg-white" : "bg-black"
+          } w-4/5`}
         />
       </div>
       <section className="py-12 px-4">

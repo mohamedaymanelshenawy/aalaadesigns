@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-console */
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   Button,
   ButtonGroup,
@@ -11,8 +10,6 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "@nextui-org/react";
-
-import styles from "./products.module.css";
 
 import {
   Pagination,
@@ -26,7 +23,10 @@ import ProductCard from "@/components/ProductCard";
 import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
 type SelectionOption = "shirts" | "dresses" | "cardigans";
-
+type CategoryFilter = {
+  category?: number;
+  subcategory?: number;
+};
 type Product = {
   name: string;
   description: string;
@@ -41,11 +41,11 @@ type Product = {
 };
 
 const LoadingAnimation = () => (
-  <div className={styles.loadingContainer}>
+  <div className="flex justify-center items-center space-x-2">
     {[0, 1, 2].map((index) => (
       <div
         key={index}
-        className={styles.loadingDot}
+        className="w-3 h-3 bg-gray-500 rounded-full animate-bounce"
         style={{
           animationDelay: `${index * 0.2}s`,
         }}
@@ -60,27 +60,45 @@ export default function Shop() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
+  const searchParams = useSearchParams();
+
+  const categoryId = searchParams.get("category")
+    ? parseInt(searchParams.get("category") as string, 10)
+    : undefined;
+  const subcategoryId = searchParams.get("subcategory")
+    ? parseInt(searchParams.get("subcategory") as string, 10)
+    : undefined;
+
+  const filter: CategoryFilter = {
+    category: categoryId,
+    subcategory: subcategoryId,
+  };
 
   useEffect(() => {
     async function fetchProducts() {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/products?page=${page}`);
+        const queryParams = new URLSearchParams({
+          page: page.toString(),
+          ...(filter.category && { category: filter.category.toString() }),
+          ...(filter.subcategory && {
+            subcategory: filter.subcategory.toString(),
+          }),
+        });
+        const response = await fetch(`/api/products?${queryParams.toString()}`);
         const data = await response.json();
 
         setProducts(data.products);
         setTotalProducts(data.totalProducts);
-
         setTotalPages(data.totalPages);
       } catch (error) {
-        console.error("Failed to fetch products:", error);
       } finally {
         setIsLoading(false);
       }
     }
 
     fetchProducts();
-  }, [page]);
+  }, [page, filter.category, filter.subcategory]);
 
   const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
   const [selectedOption, setSelectedOption] = useState<Set<SelectionOption>>(
@@ -89,8 +107,8 @@ export default function Shop() {
 
   const descriptionsMap: Record<SelectionOption, string> = {
     shirts: "All new shirts",
-    dresses: "All new Dresses.",
-    cardigans: "All new Cardigans.",
+    dresses: "All new Dresses",
+    cardigans: "All new Cardigans",
   };
 
   const labelsMap: Record<SelectionOption, string> = {
@@ -103,9 +121,6 @@ export default function Shop() {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-  };
-  const handleProductClick = (productId: number) => {
-    console.log("Product clicked", productId);
   };
 
   return (
@@ -187,7 +202,7 @@ export default function Shop() {
           <PaginationContent>
             <PaginationItem>
               <PaginationPrevious
-                className={`mr-2 cursor-pointer ${page === 1 ? "hidden" : null} `}
+                className={`mr-2 cursor-pointer ${page === 1 ? "hidden" : ""}`}
                 onClick={() => handlePageChange(page - 1)}
               />
             </PaginationItem>
@@ -206,7 +221,7 @@ export default function Shop() {
             )}
             <PaginationItem>
               <PaginationNext
-                className={`cursor-pointer ml-2 ${page === totalPages ? "hidden" : null} `}
+                className={`cursor-pointer ml-2 ${page === totalPages ? "hidden" : ""}`}
                 onClick={() => handlePageChange(page + 1)}
               />
             </PaginationItem>

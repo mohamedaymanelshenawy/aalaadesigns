@@ -1,12 +1,20 @@
 "use client";
-import React from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@nextui-org/react";
 interface CategoryCardProps {
   name: string;
   path: string;
+  id: number;
 }
 
-function Category({ name, path }: CategoryCardProps) {
+function Category({ name, path, id }: CategoryCardProps) {
+  const router = useRouter();
+
+  function handleOnClick() {
+    //go to products page with the category selected
+    router.push(`/products?categoryID=${id}`);
+  }
+
   return (
     <>
       <Card
@@ -16,6 +24,7 @@ function Category({ name, path }: CategoryCardProps) {
         style={{
           backgroundImage: `url('${path}')`,
         }}
+        onClick={handleOnClick}
       >
         <div className="text-white flex flex-none bg-black h-full justify-center bg-opacity-50">
           <h1 className="text-4xl max-h-7 m-auto">{name}</h1>
