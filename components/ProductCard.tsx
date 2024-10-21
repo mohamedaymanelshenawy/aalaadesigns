@@ -1,20 +1,33 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Shoppingbag from "@/components/svgs/Shoppingbag";
+import { useCart } from "@/app/contexts/CartContext";
 
-interface ProductCardProps {
+interface Product {
   id: number;
   name: string;
   description?: string;
-  price: string;
-  isInCart: boolean;
+  price: number;
   image_path: string;
+}
+
+interface ProductCardProps extends Product {
   link: string;
+}
+
+export interface CartItem extends Product {
+  count: number;
+}
+
+export interface Cart {
+  id: number;
+  items: CartItem[];
 }
 
 export default function ProductCard({
@@ -22,11 +35,31 @@ export default function ProductCard({
   name,
   description,
   price,
-  isInCart = false,
   image_path,
   link,
 }: ProductCardProps) {
-  const [isCarted, setIsCarted] = useState(false);
+  const { cart, setCart } = useCart();
+  const [isCarted, setIsCarted] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkIfInCart = () => {
+      const productInCart = cart?.items?.some(
+        (item: CartItem) => item.id === id
+      );
+
+      setIsCarted(!!productInCart);
+    };
+
+    checkIfInCart();
+
+    const handleCartUpdate = () => checkIfInCart();
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
+  }, [cart, id]);
 
   const addToCart = async () => {
     try {
@@ -42,19 +75,54 @@ export default function ProductCard({
         throw new Error("Failed to add product to cart");
       }
 
-      const result = await response.json();
+      setCart((prevCart: Cart) => ({
+        ...prevCart,
+        items: [
+          ...(prevCart?.items || []),
+          { id, name, price, count: 1, image_path },
+        ],
+      }));
 
-      // You could update some state here to show a success message or update the cart count
-    } catch (error) {
-      // You could update some state here to show an error message
-    }
+      setIsCarted(true);
+
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
+    } catch (error) {}
   };
 
-  const handleCartClick = (e: React.MouseEvent) => {
+  const removeFromCart = async () => {
+    try {
+      const response = await fetch("/api/cart/remove", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to remove product from cart");
+      }
+
+      setCart((prevCart: Cart) => ({
+        ...prevCart,
+        items:
+          prevCart?.items?.filter((item: CartItem) => item.id !== id) || [],
+      }));
+
+      setIsCarted(false);
+
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
+    } catch (error) {}
+  };
+
+  const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsCarted(!isCarted);
-    addToCart();
+    if (isCarted) {
+      removeFromCart();
+    } else {
+      addToCart();
+    }
   };
 
   return (
@@ -68,7 +136,7 @@ export default function ProductCard({
               layout="fill"
               objectFit="cover"
               objectPosition="top"
-              src="/shirt.png"
+              src={image_path}
             />
           </div>
           <div className="p-4 flex-grow flex flex-col justify-between">
@@ -79,8 +147,9 @@ export default function ProductCard({
               )}
             </div>
             <div className="flex justify-between items-center mt-2">
-              <p className="font-bold">{price} EGP</p>
+              <p className="font-bold">{price.toFixed(2)} EGP</p>
               <Button
+                aria-label={isCarted ? "Remove from cart" : "Add to cart"}
                 className="flex items-center justify-center"
                 size="icon"
                 onClick={handleCartClick}

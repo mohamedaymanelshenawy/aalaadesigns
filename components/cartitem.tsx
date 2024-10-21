@@ -13,9 +13,9 @@ interface CartItemProps {
   price: string;
   imageSrc: string;
   quantity: number;
-  onIncrement: () => void;
-  onDecrement: () => void;
-  onQuantityChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onIncrement?: () => void;
+  onDecrement?: () => void;
+  onQuantityChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function CartItem({

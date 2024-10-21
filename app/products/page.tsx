@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   Button,
   ButtonGroup,
@@ -11,6 +12,10 @@ import {
   DropdownItem,
 } from "@nextui-org/react";
 
+import { Product } from "../types/types";
+
+import { useCart } from "@/app/contexts/CartContext";
+import { useUser } from "@/app/contexts/UserContext";
 import {
   Pagination,
   PaginationContent,
@@ -26,18 +31,6 @@ type SelectionOption = "shirts" | "dresses" | "cardigans";
 type CategoryFilter = {
   category?: number;
   subcategory?: number;
-};
-type Product = {
-  name: string;
-  description: string;
-  price: number;
-  stock: number;
-  createdat: string;
-  image_path: string;
-  id: number;
-  categoryid: number;
-  material: string;
-  subcategoryid: number;
 };
 
 function LoadingAnimation() {
@@ -63,6 +56,8 @@ function ShopContent() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const searchParams = useSearchParams();
+  const { setCart } = useCart();
+  const { user } = useUser();
 
   const categoryId = searchParams.get("category")
     ? parseInt(searchParams.get("category") as string, 10)
@@ -76,6 +71,46 @@ function ShopContent() {
     subcategory: subcategoryId,
   };
 
+  //const handleAddToCart = async (
+  //  productId: number,
+  //  count: number,
+  //  method: string
+  //) => {
+  //  if (!user || !user.id) {
+  //    return;
+  //  }
+
+  //  try {
+  //    const response = await fetch("/api/cart/add", {
+  //      method: "POST",
+  //      headers: {
+  //        "Content-Type": "application/json",
+  //      },
+  //      body: JSON.stringify({
+  //        userId: user.id,
+  //        productId: productId,
+  //        count: count,
+  //        method: method,
+  //      }),
+  //    });
+
+  //    if (!response.ok) {
+  //      throw new Error("Failed to add item to cart");
+  //    }
+  //  } catch (err) {
+  //    console.error("Error adding item to cart:", err);
+  //    // Optionally, show an error message to the user
+  //  }
+  //};
+
+  //const checkIfInCart = (productId: number) => {
+  //  if (!cart || !cart.items) {
+  //    return false;
+  //  }
+
+  //  return cart.items.some((item) => item.id === productId);
+  //};
+
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -87,12 +122,15 @@ function ShopContent() {
             subcategory: filter.subcategory.toString(),
           }),
         });
-        const response = await fetch(`/api/products?${queryParams.toString()}`);
-        const data = await response.json();
+        const fetchedProducts = await fetch(
+          `/api/products?${queryParams.toString()}`
+        );
+        const fetchedProductsData = await fetchedProducts.json();
+        const products = fetchedProductsData.products;
 
-        setProducts(data.products);
-        setTotalProducts(data.totalProducts);
-        setTotalPages(data.totalPages);
+        setProducts(products);
+        setTotalProducts(fetchedProductsData.totalProducts);
+        setTotalPages(fetchedProductsData.totalPages);
       } catch (error) {
       } finally {
         setIsLoading(false);
@@ -101,6 +139,31 @@ function ShopContent() {
 
     fetchProducts();
   }, [page, filter.category, filter.subcategory]);
+
+  useEffect(() => {
+    fetchCartItems();
+  }, [user]);
+  const fetchCartItems = async () => {
+    if (user) {
+      const fetchCartItems = await fetch(`/api/cart?userId=${user?.id}`);
+      const cartData = await fetchCartItems.json();
+
+      if (cartData && cartData.items) {
+        setCart(cartData);
+      }
+
+      //if (cart && cart.items) {
+      //  console.log("cart items", cart.items);
+      //  for (let i = 0; i < products.length; i++) {
+      //    const inCart = checkIfInCart(products[i].id);
+
+      //    if (inCart) {
+      //      products[i].isInCart = true;
+      //    }
+      //  }
+      //}
+    }
+  };
 
   const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
   const [selectedOption, setSelectedOption] = useState<Set<SelectionOption>>(
@@ -124,6 +187,20 @@ function ShopContent() {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
+
+  const SkeletonPulse = () => (
+    <motion.div
+      animate={{
+        opacity: [0.5, 1, 0.5],
+      }}
+      className="w-full h-[350px] bg-gray-200 rounded"
+      transition={{
+        duration: 1.5,
+        repeat: Infinity,
+        ease: "easeInOut",
+      }}
+    />
+  );
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -176,22 +253,26 @@ function ShopContent() {
         </div>
       </div>
       <div className="flex-grow">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-8 mx-auto mb-5">
+        <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-8 mx-auto mb-5">
           {isLoading ? (
-            <div className="col-span-full flex justify-center items-center h-64">
-              <LoadingAnimation />
-            </div>
+            Array(6)
+              .fill(null)
+              .map((_, index) => (
+                <div key={index} className="w-full">
+                  <SkeletonPulse />
+                </div>
+              ))
           ) : products.length > 0 ? (
             products.map((product) => (
               <ProductCard
                 key={product.id}
                 description={product.description}
                 id={product.id}
-                image_path={product.image_path}
-                isInCart={false}
+                image_path="/shirt.png"
+                //isInCart={product.isInCart}
                 link={`/products/${product.id}`}
                 name={product.name}
-                price={`${product.price}`}
+                price={product.price}
               />
             ))
           ) : (
