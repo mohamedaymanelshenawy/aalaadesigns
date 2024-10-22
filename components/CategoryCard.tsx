@@ -1,37 +1,36 @@
-"use client";
-import { useRouter } from "next/navigation";
-import { Card } from "@nextui-org/react";
+import Image from "next/image";
+import Link from "next/link";
+
 interface CategoryCardProps {
-  name: string;
-  path: string;
   id: number;
+  name: string;
+  imageIndex?: number;
+  isLarge: boolean;
 }
 
-function Category({ name, path, id }: CategoryCardProps) {
-  const router = useRouter();
+export default function CategoryCard({
+  id,
+  name,
 
-  function handleOnClick() {
-    //go to products page with the category selected
-    router.push(`/products?categoryID=${id}`);
-  }
-
+  isLarge,
+}: CategoryCardProps) {
   return (
-    <>
-      <Card
-        disableRipple
-        isHoverable
-        className="w-[21rem] h-[33rem] bg-cover bg-center justify-center m-2 bg-white bg-opacity-none hover:shadow-xl hover:scale-105 transform transition-transform duration-300"
-        style={{
-          backgroundImage: `url('${path}')`,
-        }}
-        onClick={handleOnClick}
-      >
-        <div className="text-white flex flex-none bg-black h-full justify-center bg-opacity-50">
-          <h1 className="text-4xl max-h-7 m-auto">{name}</h1>
-        </div>
-      </Card>
-    </>
+    <Link
+      className={`relative overflow-hidden rounded group ${
+        isLarge ? "col-span-2" : "col-span-1"
+      } h-40`}
+      href={`/category/${id}`}
+    >
+      <Image
+        fill
+        alt={name}
+        className="object-cover transition-transform duration-300 group-hover:scale-110"
+        src={`/shirt.png`}
+      />
+      <div className="absolute inset-0 bg-black bg-opacity-40 transition-opacity duration-300 group-hover:bg-opacity-50" />
+      <div className="absolute inset-0 flex items-center justify-center">
+        <h3 className="text-white text-lg font-bold uppercase">{name}</h3>
+      </div>
+    </Link>
   );
 }
-
-export default Category;

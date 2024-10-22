@@ -3,11 +3,15 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+
+import AnimatedShoppingBag from "./svgs/AnimatedShoppingBag";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import Shoppingbag from "@/components/svgs/Shoppingbag";
 import { useCart } from "@/app/contexts/CartContext";
+import { addToCart } from "@/app/util/utils";
+import { useUser } from "@/app/contexts/UserContext";
 
 interface Product {
   id: number;
@@ -40,6 +44,8 @@ export default function ProductCard({
 }: ProductCardProps) {
   const { cart, setCart } = useCart();
   const [isCarted, setIsCarted] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { user } = useUser();
 
   useEffect(() => {
     const checkIfInCart = () => {
@@ -61,35 +67,36 @@ export default function ProductCard({
     };
   }, [cart, id]);
 
-  const addToCart = async () => {
+  const handleAddToCart = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch("/api/cart/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id, name, price }),
+      const response = await addToCart({
+        productId: id,
+        count: 1,
+        user: user,
+        method: "add",
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to add product to cart");
+      if (response && response.status === 200) {
+        setIsCarted(true);
+        setCart((prevCart: Cart) => ({
+          ...prevCart,
+          items: [
+            ...(prevCart?.items || []),
+            { id, name, price, image_path, count: 1 },
+          ],
+        }));
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+      } else {
       }
-
-      setCart((prevCart: Cart) => ({
-        ...prevCart,
-        items: [
-          ...(prevCart?.items || []),
-          { id, name, price, count: 1, image_path },
-        ],
-      }));
-
-      setIsCarted(true);
-
-      window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const removeFromCart = async () => {
+    setIsLoading(true);
     try {
       const response = await fetch("/api/cart/remove", {
         method: "POST",
@@ -99,29 +106,30 @@ export default function ProductCard({
         body: JSON.stringify({ id }),
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to remove product from cart");
+      if (response.ok) {
+        setCart((prevCart: Cart) => ({
+          ...prevCart,
+          items:
+            prevCart?.items?.filter((item: CartItem) => item.id !== id) || [],
+        }));
+
+        setIsCarted(false);
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+      } else {
       }
-
-      setCart((prevCart: Cart) => ({
-        ...prevCart,
-        items:
-          prevCart?.items?.filter((item: CartItem) => item.id !== id) || [],
-      }));
-
-      setIsCarted(false);
-
-      window.dispatchEvent(new CustomEvent("cartUpdated"));
-    } catch (error) {}
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleCartClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (isCarted) {
-      removeFromCart();
+      await removeFromCart();
     } else {
-      addToCart();
+      await handleAddToCart();
     }
   };
 
@@ -148,14 +156,31 @@ export default function ProductCard({
             </div>
             <div className="flex justify-between items-center mt-2">
               <p className="font-bold">{price.toFixed(2)} EGP</p>
-              <Button
-                aria-label={isCarted ? "Remove from cart" : "Add to cart"}
-                className="flex items-center justify-center"
-                size="icon"
-                onClick={handleCartClick}
-              >
-                <Shoppingbag IsInCart={isCarted} />
-              </Button>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={
+                    isLoading ? "loading" : isCarted ? "carted" : "not-carted"
+                  }
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Button
+                    aria-label={isCarted ? "Remove from cart" : "Add to cart"}
+                    className="flex items-center justify-center"
+                    disabled={isLoading}
+                    size="icon"
+                    onClick={handleCartClick}
+                  >
+                    <AnimatedShoppingBag
+                      isAdding={isLoading}
+                      isInCart={isCarted}
+                      isLoading={isLoading}
+                    />
+                  </Button>
+                </motion.div>
+              </AnimatePresence>
             </div>
           </div>
         </CardContent>

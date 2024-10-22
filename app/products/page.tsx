@@ -71,46 +71,6 @@ function ShopContent() {
     subcategory: subcategoryId,
   };
 
-  //const handleAddToCart = async (
-  //  productId: number,
-  //  count: number,
-  //  method: string
-  //) => {
-  //  if (!user || !user.id) {
-  //    return;
-  //  }
-
-  //  try {
-  //    const response = await fetch("/api/cart/add", {
-  //      method: "POST",
-  //      headers: {
-  //        "Content-Type": "application/json",
-  //      },
-  //      body: JSON.stringify({
-  //        userId: user.id,
-  //        productId: productId,
-  //        count: count,
-  //        method: method,
-  //      }),
-  //    });
-
-  //    if (!response.ok) {
-  //      throw new Error("Failed to add item to cart");
-  //    }
-  //  } catch (err) {
-  //    console.error("Error adding item to cart:", err);
-  //    // Optionally, show an error message to the user
-  //  }
-  //};
-
-  //const checkIfInCart = (productId: number) => {
-  //  if (!cart || !cart.items) {
-  //    return false;
-  //  }
-
-  //  return cart.items.some((item) => item.id === productId);
-  //};
-
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -132,6 +92,7 @@ function ShopContent() {
         setTotalProducts(fetchedProductsData.totalProducts);
         setTotalPages(fetchedProductsData.totalPages);
       } catch (error) {
+        console.error("Error fetching products:", error);
       } finally {
         setIsLoading(false);
       }
@@ -143,6 +104,7 @@ function ShopContent() {
   useEffect(() => {
     fetchCartItems();
   }, [user]);
+
   const fetchCartItems = async () => {
     if (user) {
       const fetchCartItems = await fetch(`/api/cart?userId=${user?.id}`);
@@ -151,17 +113,6 @@ function ShopContent() {
       if (cartData && cartData.items) {
         setCart(cartData);
       }
-
-      //if (cart && cart.items) {
-      //  console.log("cart items", cart.items);
-      //  for (let i = 0; i < products.length; i++) {
-      //    const inCart = checkIfInCart(products[i].id);
-
-      //    if (inCart) {
-      //      products[i].isInCart = true;
-      //    }
-      //  }
-      //}
     }
   };
 
@@ -205,19 +156,19 @@ function ShopContent() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="w-full">
-        <nav className="flex justify-center items-center pb-4 mb-7">
+        <nav className="flex flex-wrap justify-center items-center pb-4 mb-7">
           {categories.map((category) => (
             <Button
               key={category}
-              className="font-semibold text-lg mx-2"
+              className="font-semibold text-sm sm:text-base lg:text-lg mx-1 sm:mx-2 my-1"
               variant="light"
             >
               {category}
             </Button>
           ))}
         </nav>
-        <div className="flex justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
-          <p className="text-gray-600">
+        <div className="flex flex-col sm:flex-row justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
+          <p className="text-gray-600 mb-2 sm:mb-0">
             SHOWING {products.length} of {totalProducts} RESULTS
           </p>
           <ButtonGroup variant="flat">
@@ -253,7 +204,7 @@ function ShopContent() {
         </div>
       </div>
       <div className="flex-grow">
-        <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-8 mx-auto mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full max-w-6xl px-4 sm:px-6 lg:px-8 mx-auto mb-5">
           {isLoading ? (
             Array(6)
               .fill(null)
@@ -269,7 +220,6 @@ function ShopContent() {
                 description={product.description}
                 id={product.id}
                 image_path="/shirt.png"
-                //isInCart={product.isInCart}
                 link={`/products/${product.id}`}
                 name={product.name}
                 price={product.price}

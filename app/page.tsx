@@ -1,24 +1,21 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @next/next/no-img-element */
 "use client";
-
 import { useEffect, useState } from "react";
-import { Card, Button, Link } from "@nextui-org/react";
+import Link from "next/link";
+import { Card, Button } from "@nextui-org/react";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { Gorditas } from "next/font/google";
 import { useTheme } from "next-themes";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
+import Image from "next/image";
 
+import NewArraivalCard from "@/components/NewArraivalCard";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-
 import { useUser } from "@/app/contexts/UserContext";
-import CategoryCard from "@/components/CategoryCard";
-import NewArraivalCard from "@/components/NewArraivalCard";
-
 import "../styles/globals.css";
+import CategoryCard from "@/components/CategoryCard";
 
 interface Category {
   id: number;
@@ -60,10 +57,10 @@ const newArrivals = [
 
 export default function Home() {
   const [fetchedCategories, setFetchedCategories] = useState<Category[]>([]);
-  const [error, setError] = useState(false);
+  const [, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { user, setUser } = useUser();
+  const { setUser } = useUser();
   const { theme, systemTheme } = useTheme();
 
   async function fetchCategories() {
@@ -105,13 +102,11 @@ export default function Home() {
       <div className="max-w-[90rem] mx-auto text-center mb-10">
         <div className="h-10 w-1/3 bg-gray-300 dark:bg-gray-700 mx-auto mb-4" />
         <div className="h-6 w-2/3 bg-gray-300 dark:bg-gray-700 mx-auto mb-8" />
-        <div className="flex justify-center space-x-4">
-          {[...Array(3)].map((_, index) => (
-            <div
-              key={index}
-              className="w-64 h-64 bg-gray-300 dark:bg-gray-700 rounded-lg"
-            />
-          ))}
+        <div className="grid grid-cols-3 gap-4 max-w-6xl mx-auto">
+          <div className="col-span-1 aspect-[3/4] bg-gray-300 dark:bg-gray-700 rounded-lg" />
+          <div className="col-span-2 aspect-[3/2] bg-gray-300 dark:bg-gray-700 rounded-lg" />
+          <div className="col-span-2 aspect-[3/2] bg-gray-300 dark:bg-gray-700 rounded-lg" />
+          <div className="col-span-1 aspect-[3/4] bg-gray-300 dark:bg-gray-700 rounded-lg" />
         </div>
       </div>
 
@@ -142,7 +137,7 @@ export default function Home() {
     <div>
       <Card className="w-full mx-auto overflow-hidden relative">
         <div className="relative aspect-[16/7]">
-          <img
+          <Image
             alt="Summer Collection"
             className="absolute inset-0 w-full h-full object-cover object-center"
             src="/landing.png"
@@ -178,54 +173,23 @@ export default function Home() {
       </div>
       <section className="py-8 px-4">
         <div className="max-w-[90rem] mx-auto text-center">
-          <h1 className="text-5xl font-bold mx-3">Categories</h1>
-          <h3 className="text-2xl mb-8">
+          <h2 className="text-5xl font-bold mx-3">Categories</h2>
+          <p className="text-2xl mb-8">
             Mix & Match to level up your fashion game
-          </h3>
-          <div className="container mx-auto px-4 py-8 relative">
-            <Swiper
-              breakpoints={{
-                410: {
-                  slidesPerView: 1,
-                },
-                640: {
-                  slidesPerView: 2,
-                },
-                768: {
-                  slidesPerView: 3,
-                },
-                1024: {
-                  slidesPerView: 3,
-                },
-              }}
-              modules={[Navigation, Pagination]}
-              navigation={{
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-              }}
-              pagination={{ clickable: true }}
-              spaceBetween={20}
-            >
-              {fetchedCategories.length > 0 ? (
-                fetchedCategories.map((category) => (
-                  <SwiperSlide key={category.id}>
-                    <CategoryCard
-                      id={category.id}
-                      name={category.name}
-                      path="/shirt.png"
-                    />
-                  </SwiperSlide>
-                ))
-              ) : (
-                <p>No categories found.</p>
-              )}
-            </Swiper>
-            <div className="swiper-button-prev absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
-              <ChevronLeft className="w-8 h-8 text-gray-500" />
-            </div>
-            <div className="swiper-button-next absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
-              <ChevronRight className="w-8 h-8 text-gray-500" />
-            </div>
+          </p>
+          <div className="grid grid-cols-3 gap-4 max-w-6xl mx-auto">
+            {fetchedCategories.map((category, index) => {
+              const isLarge = index % 4 === 1 || index % 4 === 2;
+
+              return (
+                <CategoryCard
+                  key={index}
+                  id={index}
+                  isLarge={isLarge}
+                  name={category.name}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
@@ -238,8 +202,8 @@ export default function Home() {
       </div>
       <section className="py-12 px-4">
         <div className="max-w-[91rem] mx-auto text-center">
-          <h1 className="text-5xl font-bold m-3">New Arrivals </h1>
-          <h3 className="text-2xl mb-8">Take a look at our newest items</h3>
+          <h2 className="text-5xl font-bold m-3">New Arrivals </h2>
+          <p className="text-2xl mb-8">Take a look at our newest items</p>
           <div className="container mx-auto px-4 py-8 relative">
             <Swiper
               breakpoints={{
