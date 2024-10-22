@@ -1,18 +1,23 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
-import { useTheme } from "next-themes";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Minus, Plus } from "lucide-react";
 
+import { addToCart } from "@/app/util/utils";
+import { useCart } from "@/app/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@/app/contexts/UserContext";
+import {
+  Cart as ImportedCart,
+  CartItem as ImportedCartItem,
+} from "@/app/types/types";
 
 interface ColorAndSize {
   color: string;
@@ -46,6 +51,12 @@ interface RelatedProduct {
   subcategoryid: number;
 }
 
+type ExtendedCartItem = ImportedCartItem & Partial<Product>;
+
+type ExtendedCart = Omit<ImportedCart, "items"> & {
+  items: ExtendedCartItem[];
+};
+
 export default function ProductDetailPage() {
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
@@ -55,7 +66,10 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState(1);
-  const { theme } = useTheme();
+  const { cart, setCart } = useCart();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useUser();
+  const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -68,12 +82,10 @@ export default function ProductDetailPage() {
         setProduct(data.product);
         setRelatedProducts(data.relatedProducts);
 
-        try {
-          if (data.product.colors_and_sizes.length > 0) {
-            setSelectedColor(data.product.colors_and_sizes[0].color);
-            setSelectedSize(data.product.colors_and_sizes[0].sizes[0]);
-          }
-        } catch {}
+        if (data.product.colors_and_sizes.length > 0) {
+          setSelectedColor(data.product.colors_and_sizes[0].color);
+          setSelectedSize(data.product.colors_and_sizes[0].sizes[0]);
+        }
       } catch (error) {
         setError("Failed to load product data. Please try again later.");
       } finally {
@@ -86,6 +98,16 @@ export default function ProductDetailPage() {
     }
   }, [id]);
 
+  useEffect(() => {
+    if (product && cart && cart.items) {
+      for (let i = 0; i < cart.items.length; i++) {
+        if (cart.items[i].id === product.product_id) {
+          setIsInCart(true);
+        }
+      }
+    }
+  }, [product, cart]);
+
   const incrementQuantity = () =>
     setQuantity((prev) => Math.min(prev + 1, product?.stock || 99));
   const decrementQuantity = () => setQuantity((prev) => Math.max(prev - 1, 1));
@@ -95,6 +117,37 @@ export default function ProductDetailPage() {
 
     if (!isNaN(value) && value >= 1 && value <= (product?.stock || 99)) {
       setQuantity(value);
+    }
+  };
+
+  const handleCartClick = async () => {
+    if (!product) return;
+
+    setIsLoading(true);
+    try {
+      const response = await addToCart({
+        productId: product.product_id,
+        count: quantity,
+        user: user,
+      });
+
+      if (response && response.status === 200) {
+        setCart((prevCart: ExtendedCart) => ({
+          ...prevCart,
+          items: [
+            ...(prevCart?.items || []),
+            {
+              ...product,
+              count: quantity,
+            } as ExtendedCartItem,
+          ],
+        }));
+        setIsInCart(true);
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
+      }
+    } catch (error) {
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -140,8 +193,7 @@ export default function ProductDetailPage() {
             alt={product.product_name}
             className="w-full h-[600px] rounded-xl object-cover"
             height={600}
-            //src={product.image_path}
-            src="/shirt.png"
+            src={"/shirt.png"}
             width={600}
           />
         </div>
@@ -236,8 +288,17 @@ export default function ProductDetailPage() {
             </div>
           </div>
           <div className="space-y-4">
-            <Button className="w-full" disabled={product.stock === 0} size="lg">
-              Add to Cart
+            <Button
+              className="w-full"
+              disabled={isLoading || product.stock === 0 || isInCart}
+              size="lg"
+              onClick={handleCartClick}
+            >
+              {isLoading
+                ? "Adding to Cart..."
+                : isInCart
+                  ? "Item already in cart"
+                  : "Add to Cart"}
             </Button>
             <Button
               className="w-full"
@@ -273,8 +334,7 @@ export default function ProductDetailPage() {
                     alt={product.name}
                     className="w-full h-60 object-cover object-top"
                     height={240}
-                    //src={product.image_path}
-                    src="/shirt.png"
+                    src={"/shirt.png"}
                     width={300}
                   />
                   <div className="p-4">

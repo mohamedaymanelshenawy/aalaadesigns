@@ -7,15 +7,28 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function POST(req: NextRequest) {
   // get the id of the product as well as the user id
-  const { userId, productId, count, method } = await req.json();
+  const { userId, productId, count, method, selectedcolor, selectedsize } =
+    await req.json();
 
   if (method === "add") {
     if (!userId || !productId) {
       return new NextResponse("Missing userid or productId", { status: 400 });
     }
+    let newSelectedColor: string;
+    let newSelectedSize: string;
     //Next get the cart associated with the user
     const cartRequest = await sql`SELECT * FROM cart WHERE userid = ${userId}`;
 
+    if (!selectedcolor) {
+      newSelectedColor = "default";
+    } else {
+      newSelectedColor = selectedcolor;
+    }
+    if (!selectedsize) {
+      newSelectedSize = "default";
+    } else {
+      newSelectedSize = selectedsize;
+    }
     //If the cart does not exist, create a new cart
     if (cartRequest.rowCount === 0) {
       const cartidresult =
@@ -23,7 +36,8 @@ export async function POST(req: NextRequest) {
       const cartId = cartidresult.rows[0].id;
 
       //Insert the product into the cart
-      await sql`INSERT INTO cartitem (cartid, productid, count) VALUES (${cartId}, ${productId}, ${count})`;
+
+      await sql`INSERT INTO cartitem (cartid, productid, count,selectedcolor,selectedsize) VALUES (${cartId}, ${productId}, ${count},${newSelectedColor},${newSelectedSize})`;
     }
     //If the cart exists, add the product to the cart
     else {
@@ -32,7 +46,7 @@ export async function POST(req: NextRequest) {
         await sql`SELECT * FROM cartitem WHERE cartid = ${cartId} AND productid = ${productId}`;
 
       if (cartItemRequest.rowCount === 0) {
-        await sql`INSERT INTO cartitem (cartid, productid, count) VALUES (${cartId}, ${productId}, ${count})`;
+        await sql`INSERT INTO cartitem (cartid, productid, count,selectedcolor,selectedsize) VALUES (${cartId}, ${productId}, ${count},${newSelectedColor},${newSelectedSize})`;
       } else {
         const newCount = cartItemRequest.rows[0].count + count;
 

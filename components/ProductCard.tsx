@@ -10,7 +10,7 @@ import AnimatedShoppingBag from "./svgs/AnimatedShoppingBag";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/app/contexts/CartContext";
-import { addToCart } from "@/app/util/utils";
+import { addToCart, removeFromCart } from "@/app/util/utils";
 import { useUser } from "@/app/contexts/UserContext";
 
 interface Product {
@@ -74,7 +74,6 @@ export default function ProductCard({
         productId: id,
         count: 1,
         user: user,
-        method: "add",
       });
 
       if (response && response.status === 200) {
@@ -87,7 +86,6 @@ export default function ProductCard({
           ],
         }));
         window.dispatchEvent(new CustomEvent("cartUpdated"));
-      } else {
       }
     } catch (error) {
     } finally {
@@ -95,27 +93,22 @@ export default function ProductCard({
     }
   };
 
-  const removeFromCart = async () => {
+  const handleRemoveFromCart = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/cart/remove", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ id }),
+      const response = await removeFromCart({
+        productId: id,
+        count: 1,
+        user: user,
       });
 
-      if (response.ok) {
+      if (response && response.status === 200) {
+        setIsCarted(false);
         setCart((prevCart: Cart) => ({
           ...prevCart,
-          items:
-            prevCart?.items?.filter((item: CartItem) => item.id !== id) || [],
+          items: prevCart.items.filter((item) => item.id !== id),
         }));
-
-        setIsCarted(false);
         window.dispatchEvent(new CustomEvent("cartUpdated"));
-      } else {
       }
     } catch (error) {
     } finally {
@@ -127,7 +120,7 @@ export default function ProductCard({
     e.preventDefault();
     e.stopPropagation();
     if (isCarted) {
-      await removeFromCart();
+      await handleRemoveFromCart();
     } else {
       await handleAddToCart();
     }
