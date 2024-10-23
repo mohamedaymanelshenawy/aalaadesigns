@@ -1,39 +1,51 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
 import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  Link,
-  Button,
-  Image,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  Avatar,
-} from "@nextui-org/react";
+  motion,
+  AnimatePresence,
+  useScroll,
+  useMotionValueEvent,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   Search,
   X,
-  CircleUserRound,
-  LogIn,
-  UserRoundPlus,
-  LogOut,
   Menu,
+  LogOut,
   ChevronRight,
-  ChevronDown,
+  LogIn,
+  UserPlus,
+  ShoppingBag,
+  Home,
+  Info,
+  Sun,
+  Moon,
+  Bell,
 } from "lucide-react";
-import { useTheme } from "next-themes";
-import { useRouter } from "next/navigation";
 
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ThemeSwitch } from "@/components/theme-switch";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@/app/contexts/UserContext";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type SearchResults = {
   id: number;
@@ -41,81 +53,60 @@ type SearchResults = {
   description: string;
 };
 
-export default function CustomNavBar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
-  const [searchResults, setSearchResults] = useState<SearchResults[] | []>([]);
+const categories = [
+  {
+    name: "Clothing",
+    items: ["Basics", "Dresses", "Tops", "Skirts", "Abayas", "Tunic"],
+  },
+  { name: "Accessories", items: ["Scarves", "Jewelry", "Bags"] },
+  { name: "Outerwear", items: ["Jackets", "Coats", "Blazers"] },
+  { name: "Knitwear", items: ["Sweaters", "Cardigans", "Hoodies"] },
+];
+
+export default function ModernNavbar() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [isNavbarVisible, setIsNavbarVisible] = useState(true);
+  const [notifications] = useState(3);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const searchContainerRef = useRef<HTMLDivElement>(null);
   const { user, setUser } = useUser();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const { scrollY } = useScroll();
+  const scrollProgress = useSpring(0, { stiffness: 300, damping: 30 });
 
-  const toggleMenu = useCallback(() => {
-    setIsMenuOpen((prev) => !prev);
-  }, []);
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const previous = scrollY.getPrevious();
+
+    if (latest > previous! && latest > 150) {
+      setIsNavbarVisible(false);
+    } else {
+      setIsNavbarVisible(true);
+    }
+    const maxScroll =
+      document.documentElement.scrollHeight - window.innerHeight;
+    const progress = latest / maxScroll;
+
+    scrollProgress.set(progress);
+  });
 
   useEffect(() => {
-    if (isSearchExpanded && searchInputRef.current) {
+    if (isSearchOpen && searchInputRef.current) {
       searchInputRef.current.focus();
     }
-  }, [isSearchExpanded]);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target as Node)
-      ) {
-        setIsSearchExpanded(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  }, [isSearchOpen]);
 
   useEffect(() => {
     const body = document.body;
 
-    if (isMenuOpen) {
-      body.style.overflow = "hidden";
-    } else {
-      body.style.overflow = "";
-    }
+    body.style.overflow = isSidebarOpen ? "hidden" : "";
 
     return () => {
       body.style.overflow = "";
     };
-  }, [isMenuOpen]);
-
-  const { theme } = useTheme();
-  const aboutPageHref = "/about";
-  const cartPageHref = "/cart";
-  const signinPageHref = "/Auth/sign-in";
-  const signupPageHref = "/Auth/sign-up";
-
-  const menuItems = [
-    { name: "Home", href: "/" },
-    { name: "Cart", href: cartPageHref },
-    { name: "About", href: aboutPageHref },
-  ];
-  const categories = [
-    {
-      name: "Clothing",
-      items: ["Basics", "Dresses", "Tops", "Skirts", "Abayas", "Tunic"],
-    },
-    { name: "Accessories", items: ["Scarves", "Jewelry", "Bags"] },
-    { name: "Outerwear", items: ["Jackets", "Coats", "Blazers"] },
-    { name: "Knitwear", items: ["Sweaters", "Cardigans", "Hoodies"] },
-  ];
-
-  const toggleSearch = () => {
-    setIsSearchExpanded(!isSearchExpanded);
-  };
+  }, [isSidebarOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -123,7 +114,7 @@ export default function CustomNavBar() {
     router.push("/");
   };
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (_query: string) => {
     setIsSearching(true);
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const mockResults = [
@@ -136,213 +127,381 @@ export default function CustomNavBar() {
     setIsSearching(false);
   };
 
-  return (
-    <>
-      <Navbar
-        isBordered
-        className="p-3 w-full backdrop-blur-md mx-auto duration-300 hover:shadow-lg z-50 justify-between max-w-full"
-        maxWidth="full"
-        position="sticky"
-      >
-        <NavbarContent className="sm:hidden" justify="start">
-          <Button
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="p-0 bg-transparent ml-2 w-8 h-8 flex items-center justify-center"
-            variant="light"
-            onClick={toggleMenu}
+  const Sidebar = () => (
+    <motion.div
+      animate={{ x: 0 }}
+      className="fixed inset-y-0 left-0 z-50 w-80 bg-white dark:bg-gray-900 shadow-lg overflow-y-auto"
+      exit={{ x: "-100%" }}
+      initial={{ x: "-100%" }}
+      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+    >
+      <div className="p-6 flex justify-between items-center border-b">
+        <Link href="/" onClick={() => setIsSidebarOpen(false)}>
+          <motion.img
+            alt="Logo"
+            className="h-8 w-auto"
+            src={theme === "light" ? "/logoblack.png" : "/logowhite.png"}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            whileHover={{ scale: 1.05 }}
+          />
+        </Link>
+        <Button
+          size="icon"
+          variant="ghost"
+          onClick={() => setIsSidebarOpen(false)}
+        >
+          <X className="h-6 w-6" />
+        </Button>
+      </div>
+      <div className="p-6 space-y-6">
+        {categories.map((category, index) => (
+          <motion.div
+            key={category.name}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-3"
+            initial={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
           >
-            <Menu className="w-6 h-6 text-foreground" />
-          </Button>
-        </NavbarContent>
-
-        <NavbarBrand className="flex gap-4 justify-center">
-          <Link
-            className="font-bold text-inherit flex text-2xl justify-center"
-            href="../"
-          >
-            <Image alt="Logo" height={70} src="/logoonly.png" />
-          </Link>
-          <p className="text-xl text-foreground hidden sm:block">
-            AALAA designs
-          </p>
-        </NavbarBrand>
-
-        <NavbarContent className="hidden sm:flex flex-1 gap-2" justify="center">
-          {menuItems.map((item) => (
-            <NavbarItem key={item.name} className="hover:bg-none">
-              <Button
-                disableRipple
-                as={Link}
-                className="text-foreground"
-                color="primary"
-                href={item.href}
-                variant="light"
-              >
-                <span className="text-base md:text-xl">{item.name}</span>
-              </Button>
-            </NavbarItem>
-          ))}
-          <Dropdown>
-            <NavbarItem>
-              <DropdownTrigger>
-                <Button
-                  disableRipple
-                  className="p-0 bg-transparent data-[hover=true]:bg-transparent"
-                  endContent={<ChevronDown />}
-                  radius="sm"
-                  variant="light"
+            <h3 className="font-semibold text-lg text-gray-800 dark:text-gray-200">
+              {category.name}
+            </h3>
+            <div className="space-y-2">
+              {category.items.map((item, itemIndex) => (
+                <motion.div
+                  key={item}
+                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, x: -20 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: index * 0.1 + itemIndex * 0.05,
+                  }}
                 >
-                  Categories
-                </Button>
-              </DropdownTrigger>
-            </NavbarItem>
-            <DropdownMenu
-              aria-label="Categories"
-              className="w-[340px]"
-              itemClasses={{
-                base: "gap-4",
+                  <Button
+                    className="w-full justify-start text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+                    variant="ghost"
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    {item}
+                    <ChevronRight className="ml-auto h-4 w-4" />
+                  </Button>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        ))}
+        <motion.div
+          animate={{ opacity: 1, y: 0 }}
+          className="border-t pt-6 mt-6 space-y-2"
+          initial={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3, delay: 0.5 }}
+        >
+          <Button
+            className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+            variant="ghost"
+            onClick={() => {
+              setIsSidebarOpen(false);
+              router.push("/");
+            }}
+          >
+            <Home className="mr-2 h-4 w-4" />
+            Home
+          </Button>
+          <Button
+            className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+            variant="ghost"
+            onClick={() => {
+              setIsSidebarOpen(false);
+              router.push("/cart");
+            }}
+          >
+            <ShoppingBag className="mr-2 h-4 w-4" />
+            Cart
+          </Button>
+          <Button
+            className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+            variant="ghost"
+            onClick={() => {
+              setIsSidebarOpen(false);
+              router.push("/about");
+            }}
+          >
+            <Info className="mr-2 h-4 w-4" />
+            About
+          </Button>
+          {user ? (
+            <Button
+              className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+              variant="ghost"
+              onClick={() => {
+                setIsSidebarOpen(false);
+                handleLogout();
               }}
             >
-              {categories.map((category) => (
-                <DropdownItem key={category.name} className="py-2">
-                  <div className="flex flex-col gap-1">
-                    <span className="font-semibold text-lg">
-                      {category.name}
-                    </span>
-                    <div className="flex flex-wrap gap-2">
-                      {category.items.map((item) => (
-                        <Button
-                          key={item}
-                          as={Link}
-                          className="text-sm"
-                          color="primary"
-                          href="#"
-                          size="sm"
-                          variant="flat"
-                        >
-                          {item}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                </DropdownItem>
-              ))}
-            </DropdownMenu>
-          </Dropdown>
-        </NavbarContent>
-
-        <NavbarContent className="sm:flex-1" justify="end">
-          <Button
-            isIconOnly
-            className="h-full w-10 flex items-center justify-center navbar-search-button"
-            variant="light"
-            onClick={toggleSearch}
-          >
-            <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
-
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              {user ? (
-                <Avatar
-                  isBordered
-                  as="button"
-                  className="transition-transform"
-                  color="secondary"
-                  name={user.username}
-                  size="sm"
-                  src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                />
-              ) : (
-                <CircleUserRound className="w-6 h-6 text-foreground" />
-              )}
-            </DropdownTrigger>
-            {user ? (
-              <DropdownMenu
-                aria-label="Profile Actions"
-                className="bg-background/95 backdrop-blur-md"
-                variant="flat"
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </Button>
+          ) : (
+            <>
+              <Button
+                className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                variant="ghost"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  router.push("/Auth/sign-in");
+                }}
               >
-                <DropdownItem key="profile" className="h-14 gap-2">
-                  <p className="font-semibold">Signed in as</p>
-                  <p className="font-semibold">{user.email}</p>
-                </DropdownItem>
-                <DropdownItem key="settings">Settings</DropdownItem>
-                {user.role === "admin" ? (
-                  <DropdownItem
-                    key="analytics"
+                <LogIn className="mr-2 h-4 w-4" />
+                Sign in
+              </Button>
+              <Button
+                className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                variant="ghost"
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  router.push("/Auth/sign-up");
+                }}
+              >
+                <UserPlus className="mr-2 h-4 w-4" />
+                Sign up
+              </Button>
+            </>
+          )}
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+
+  const scrollBarWidth = useTransform(scrollProgress, [0, 1], ["0%", "100%"]);
+
+  return (
+    <>
+      <motion.nav
+        animate={{ y: isNavbarVisible ? 0 : "-100%" }}
+        className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md shadow-sm"
+        initial={{ y: 0 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+      >
+        <motion.div
+          className="h-1 bg-primary origin-left"
+          style={{ scaleX: scrollBarWidth }}
+        />
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Button
+              className="hover:bg-gray-200 dark:hover:bg-gray-800 transition-colors duration-200"
+              size="icon"
+              variant="ghost"
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <Menu className="h-6 w-6" />
+            </Button>
+            <motion.div
+              className="flex items-center space-x-2 cursor-pointer"
+              transition={{ type: "spring", stiffness: 50, damping: 10 }}
+              whileHover={{ scale: 1.03 }}
+              onClick={() => router.push("/")}
+            >
+              <motion.img
+                alt="Logo"
+                className="h-8 w-auto"
+                src="/logoonly.png"
+              />
+              <motion.span className="font-bold text-lg hidden sm:inline bg-clip-text text-black bg-gradient-to-r from-primary to-secondary">
+                AALAA designs
+              </motion.span>
+            </motion.div>
+          </div>
+
+          <div className="hidden md:flex items-center gap-8 space-x-4">
+            <NavLink href="/">
+              <Home className="mr-2 h-6 w-6" />
+              <span>Home</span>
+            </NavLink>
+            <NavLink href="/cart">
+              <ShoppingBag className="mr-2 h-6 w-6" />
+
+              <span>Cart</span>
+            </NavLink>
+            <NavLink href="/about">
+              <Info className="mr-2 h-6 w-6" />
+              <span>About </span>{" "}
+            </NavLink>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="icon-button transition-colors duration-200"
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => setIsSearchOpen(true)}
+                  >
+                    <Search className="h-5 w-5 hover:fill-gray-500" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Search</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="icon-button transition-colors duration-200 relative"
+                    size="icon"
+                    variant="ghost"
+                  >
+                    <Bell className="h-5 w-5 hover:fill-gray-500" />
+                    {notifications > 0 && (
+                      <Badge
+                        className="absolute -top-0 -right-1 px-1 min-w-[1.25rem] h-5 bg-transparent"
+                        variant="destructive"
+                      >
+                        {notifications}
+                      </Badge>
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Notifications</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+            <DropdownMenu>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        className="icon-button transition-colors duration-200"
+                        size="icon"
+                        variant="ghost"
+                      >
+                        <Avatar>
+                          <AvatarImage src={"https://github.com/shadcn.png"} />
+                          <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>User menu</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <DropdownMenuContent align="end" className="w-56">
+                {user ? (
+                  <>
+                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
+                      Settings
+                    </DropdownMenuItem>
+                    {user.role === "admin" && (
+                      <DropdownMenuItem
+                        className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                        onSelect={() =>
+                          (window.location.href =
+                            "https://aalaadesigns-dashboard.vercel.app/")
+                        }
+                      >
+                        Dashboard
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuItem
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onSelect={handleLogout}
+                    >
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownMenuItem
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onSelect={() => router.push("/Auth/sign-in")}
+                    >
+                      <LogIn className="mr-2 h-4 w-4" />
+                      <span>Sign in</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800"
+                      onSelect={() => router.push("/Auth/sign-up")}
+                    >
+                      <UserPlus className="mr-2 h-4 w-4" />
+                      <span>Sign up</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    className="icon-button transition-colors duration-200"
+                    size="icon"
+                    variant="ghost"
                     onClick={() =>
-                      (window.location.href =
-                        "https://aalaadesigns-dashboard.vercel.app/")
+                      setTheme(theme === "dark" ? "light" : "dark")
                     }
                   >
-                    Dashboard
-                  </DropdownItem>
-                ) : (
-                  <DropdownItem key="analytics">My orders</DropdownItem>
-                )}
-                <DropdownItem
-                  key="logout"
-                  color="danger"
-                  onClick={handleLogout}
-                >
-                  Log Out
-                </DropdownItem>
-              </DropdownMenu>
-            ) : (
-              <DropdownMenu
-                aria-label="Profile Actions"
-                className="bg-background/95 backdrop-blur-md"
-                variant="flat"
-              >
-                <DropdownItem key="help_and_feedback">
-                  Help & Feedback
-                </DropdownItem>
-                <DropdownItem key="signin" as={Link} href={signinPageHref}>
-                  Sign in
-                </DropdownItem>
-              </DropdownMenu>
-            )}
-          </Dropdown>
-          <ThemeSwitch />
-        </NavbarContent>
-      </Navbar>
+                    <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                    <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <span className="sr-only">Toggle theme</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Toggle theme</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        </div>
+      </motion.nav>
+
+      <AnimatePresence>{isSidebarOpen && <Sidebar />}</AnimatePresence>
 
       <AnimatePresence>
-        {isSearchExpanded && (
+        {isSearchOpen && (
           <motion.div
-            animate={{ opacity: 1, y: 0 }}
-            className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-start justify-center pt-20"
-            exit={{ opacity: 0, y: -20 }}
-            initial={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
-            onClick={() => setIsSearchExpanded(false)}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-start justify-center pt-20"
+            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setIsSearchOpen(false)}
           >
             <motion.div
-              animate={{ width: ["80%", "90%", "95%"], opacity: 1 }}
-              className="bg-white border rounded shadow-xl overflow-hidden max-w-3xl w-full"
-              exit={{ width: "80%", opacity: 0 }}
-              initial={{ width: "80%", opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-card rounded-lg shadow-xl overflow-hidden max-w-3xl w-full"
+              exit={{ scale: 0.9, opacity: 0 }}
+              initial={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="relative">
                 <Input
                   ref={searchInputRef}
-                  className="w-full py-6 px-4 text-lg rounded"
+                  className="w-full py-6 px-4 text-lg rounded-none"
                   placeholder="Search..."
-                  type="search"
                   onChange={(e) => handleSearch(e.target.value)}
                 />
                 <Button
-                  isIconOnly
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 navbar-search-button"
-                  variant="light"
-                  onClick={() => setIsSearchExpanded(false)}
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 transition-colors duration-200"
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => setIsSearchOpen(false)}
                 >
                   <X className="h-6 w-6" />
-                  <span className="sr-only">Close search</span>
                 </Button>
               </div>
               {(searchResults.length > 0 || isSearching) && (
@@ -351,7 +510,7 @@ export default function CustomNavBar() {
                   className="p-4"
                   exit={{ opacity: 0, y: 10 }}
                   initial={{ opacity: 0, y: 10 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ delay: 0.1 }}
                 >
                   {isSearching ? (
                     <div className="text-center">
@@ -361,19 +520,20 @@ export default function CustomNavBar() {
                       </p>
                     </div>
                   ) : (
-                    <ul>
+                    <ul className="space-y-2">
                       {searchResults.map((result) => (
-                        <li
+                        <motion.li
                           key={result.id}
-                          className="py-2 hover:bg-accent/50 cursor-pointer transition-colors duration-150 ease-in-out"
+                          animate={{ opacity: 1, y: 0 }}
+                          className="p-2 hover:bg-accent rounded-md cursor-pointer transition-colors duration-200"
+                          initial={{ opacity: 0, y: 5 }}
+                          transition={{ delay: 0.1 }}
                         >
-                          <h3 className="text-sm font-medium">
-                            {result.title}
-                          </h3>
-                          <p className="text-xs text-muted-foreground">
+                          <h3 className="font-medium">{result.title}</h3>
+                          <p className="text-sm text-muted-foreground">
                             {result.description}
                           </p>
-                        </li>
+                        </motion.li>
                       ))}
                     </ul>
                   )}
@@ -383,127 +543,30 @@ export default function CustomNavBar() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            animate={{ opacity: 1, x: 0 }}
-            className="fixed inset-y-0 left-0 z-50 w-full sm:w-80 bg-background/95 backdrop-blur-3xl text-foreground overflow-y-auto border-r border-border"
-            exit={{ opacity: 0, x: "-100%" }}
-            initial={{ opacity: 0, x: "-100%" }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="p-4 border-b flex justify-between items-center">
-              <Link href="../" onClick={toggleMenu}>
-                <Image
-                  alt="Logo"
-                  className="w-32 text-center"
-                  height={60}
-                  src={theme === "light" ? "/logoblack.png" : "/logowhite.png"}
-                />
-              </Link>
-              <Button
-                aria-label="Close menu"
-                className="p-0 bg-transparent"
-                variant="light"
-                onClick={toggleMenu}
-              >
-                <X className="w-6 h-6 text-foreground" />
-              </Button>
-            </div>
-            <div className="flex-grow overflow-y-auto">
-              <div className="p-4">
-                {categories.map((category) => (
-                  <div key={category.name} className="mb-6">
-                    <h2 className="text-xl font-bold mb-2">{category.name}</h2>
-                    {category.items.map((item) => (
-                      <Button
-                        key={item}
-                        as={Link}
-                        className="w-full justify-between mb-2 py-2 text-base font-semibold"
-                        color="primary"
-                        href="#"
-                        variant="flat"
-                        onClick={toggleMenu}
-                      >
-                        {item}
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
-                    ))}
-                  </div>
-                ))}
-              </div>
-              <div className="p-4 border-t">
-                <h2 className="text-xl font-bold mb-2">Navigation</h2>
-                {menuItems.map((item) => (
-                  <Button
-                    key={item.name}
-                    as={Link}
-                    className="w-full justify-between mb-2 py-2 text-base font-semibold"
-                    color="primary"
-                    href={item.href}
-                    variant="flat"
-                    onClick={toggleMenu}
-                  >
-                    <span className="flex items-center">{item.name}</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                ))}
-              </div>
-            </div>
-            <div className="p-4 border-t">
-              {user ? (
-                <Button
-                  className="w-full justify-between py-2 text-base font-semibold"
-                  color="primary"
-                  variant="flat"
-                  onClick={() => {
-                    toggleMenu();
-                    handleLogout();
-                  }}
-                >
-                  <span className="flex items-center">
-                    <LogOut className="mr-2 w-4 h-4" />
-                    Logout
-                  </span>
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
-              ) : (
-                <>
-                  <Button
-                    as={Link}
-                    className="w-full justify-between mb-2 py-2 text-base font-semibold"
-                    color="primary"
-                    href={signinPageHref}
-                    variant="flat"
-                    onClick={toggleMenu}
-                  >
-                    <span className="flex items-center">
-                      <LogIn className="mr-2 w-4 h-4" />
-                      Login
-                    </span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    as={Link}
-                    className="w-full justify-between py-2 text-base font-semibold"
-                    color="primary"
-                    href={signupPageHref}
-                    variant="flat"
-                    onClick={toggleMenu}
-                  >
-                    <span className="flex items-center">
-                      <UserRoundPlus className="mr-2 w-4 h-4" />
-                      Sign up
-                    </span>
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
+  );
+}
+
+function NavLink({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+
+  return (
+    <Link className="relative group " href={href}>
+      <span
+        className={`text-xl flex items-center font-medium ${isActive ? "text-primary" : "hover:text-primary hover:opacity-80"} transition-colors duration-200`}
+      >
+        {children}
+      </span>
+      <span
+        className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 ${isActive ? "w-full" : "group-hover:w-full"}`}
+      />
+    </Link>
   );
 }

@@ -7,7 +7,6 @@ import { Gorditas } from "next/font/google";
 import { useTheme } from "next-themes";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
-import Image from "next/image";
 
 import NewArraivalCard from "@/components/NewArraivalCard";
 import "swiper/css";
@@ -137,11 +136,14 @@ export default function Home() {
     <div>
       <Card className="w-full mx-auto overflow-hidden relative">
         <div className="relative aspect-[16/7]">
-          <Image
-            alt="Summer Collection"
-            className="absolute inset-0 w-full h-full object-cover object-center"
-            src="/landing.png"
-          />
+          {
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              alt="Summer Collection"
+              className="absolute inset-0 w-full h-full object-cover object-center"
+              src="/landing.png"
+            />
+          }
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/60" />
           <div className="absolute inset-0 flex flex-col justify-between p-6 text-white">
             <h2

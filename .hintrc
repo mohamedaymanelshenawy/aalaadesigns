@@ -14,6 +14,12 @@
           "text-wrap: balance"
         ]
       }
+    ],
+    "axe/structure": [
+      "default",
+      {
+        "list": "off"
+      }
     ]
   }
 }
