@@ -70,6 +70,8 @@ export default function ProductCard({
   const handleAddToCart = async () => {
     setIsLoading(true);
     try {
+      //set delay to 1 second
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       const response = await addToCart({
         productId: id,
         count: 1,
@@ -167,7 +169,7 @@ export default function ProductCard({
                     onClick={handleCartClick}
                   >
                     <AnimatedShoppingBag
-                      isAdding={isLoading}
+                      isAdding={true}
                       isInCart={isCarted}
                       isLoading={isLoading}
                     />

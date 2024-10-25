@@ -26,7 +26,6 @@ import {
   Info,
   Sun,
   Moon,
-  Bell,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,7 +38,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@/app/contexts/UserContext";
-import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
   TooltipContent,
@@ -69,7 +67,6 @@ export default function ModernNavbar() {
   const [searchResults, setSearchResults] = useState<SearchResults[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [isNavbarVisible, setIsNavbarVisible] = useState(true);
-  const [notifications] = useState(3);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { user, setUser } = useUser();
   const router = useRouter();
@@ -347,31 +344,6 @@ export default function ModernNavbar() {
               </Tooltip>
             </TooltipProvider>
 
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    className="icon-button transition-colors duration-200 relative"
-                    size="icon"
-                    variant="ghost"
-                  >
-                    <Bell className="h-5 w-5 hover:fill-gray-500" />
-                    {notifications > 0 && (
-                      <Badge
-                        className="absolute -top-0 -right-1 px-1 min-w-[1.25rem] h-5 bg-transparent"
-                        variant="destructive"
-                      >
-                        {notifications}
-                      </Badge>
-                    )}
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Notifications</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-
             <DropdownMenu>
               <TooltipProvider>
                 <Tooltip>
@@ -482,16 +454,16 @@ export default function ModernNavbar() {
           >
             <motion.div
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-card rounded-lg shadow-xl overflow-hidden max-w-3xl w-full"
+              className="bg-card shadow-xl overflow-hidden max-w-3xl w-full bg-white rounded"
               exit={{ scale: 0.9, opacity: 0 }}
               initial={{ scale: 0.9, opacity: 0 }}
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="relative">
+              <div className="relative bg-white">
                 <Input
                   ref={searchInputRef}
-                  className="w-full py-6 px-4 text-lg rounded-none"
+                  className="w-full py-6 px-4 text-lg bg-white rounded"
                   placeholder="Search..."
                   onChange={(e) => handleSearch(e.target.value)}
                 />
@@ -507,13 +479,13 @@ export default function ModernNavbar() {
               {(searchResults.length > 0 || isSearching) && (
                 <motion.div
                   animate={{ opacity: 1, y: 0 }}
-                  className="p-4"
+                  className="p-2 rounded bg-white"
                   exit={{ opacity: 0, y: 10 }}
                   initial={{ opacity: 0, y: 10 }}
                   transition={{ delay: 0.1 }}
                 >
                   {isSearching ? (
-                    <div className="text-center">
+                    <div className="text-center bg-white">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto" />
                       <p className="mt-2 text-sm text-muted-foreground">
                         Searching...
@@ -525,7 +497,7 @@ export default function ModernNavbar() {
                         <motion.li
                           key={result.id}
                           animate={{ opacity: 1, y: 0 }}
-                          className="p-2 hover:bg-accent rounded-md cursor-pointer transition-colors duration-200"
+                          className="p-2 hover:bg-accent rounded-md cursor-pointer transition-colors duration-200 hover:bg-gray-400"
                           initial={{ opacity: 0, y: 5 }}
                           transition={{ delay: 0.1 }}
                         >

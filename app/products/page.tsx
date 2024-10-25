@@ -92,7 +92,6 @@ function ShopContent() {
         setTotalProducts(fetchedProductsData.totalProducts);
         setTotalPages(fetchedProductsData.totalPages);
       } catch (error) {
-        console.error("Error fetching products:", error);
       } finally {
         setIsLoading(false);
       }
