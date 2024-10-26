@@ -6,19 +6,22 @@ interface CategoryCardProps {
   name: string;
   imageIndex?: number;
   isLarge: boolean;
+  className?: string;
 }
 
 export default function CategoryCard({
   id,
   name,
-
+  className,
   isLarge,
 }: CategoryCardProps) {
   return (
     <Link
-      className={`relative overflow-hidden rounded group ${
-        isLarge ? "col-span-2" : "col-span-1"
-      } h-40`}
+      className={
+        `relative overflow-hidden rounded group ${
+          isLarge ? "col-span-2" : "col-span-1"
+        } h-40` + (className ? ` ${className}` : "")
+      }
       href={`/category/${id}`}
     >
       <Image
