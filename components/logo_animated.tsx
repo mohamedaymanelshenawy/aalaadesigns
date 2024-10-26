@@ -25,7 +25,7 @@ export default function Component() {
   };
 
   return (
-    <div className="w-full h-screen flex items-center justify-center bg-gray-100">
+    <div className="w-full h-[50vh] mt-48 flex items-center justify-center bg-gray-100">
       <motion.svg
         animate={["visible", "colored"]}
         className="w-full max-w-3xl"
