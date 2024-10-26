@@ -12,7 +12,7 @@ const AppWrapper = ({ children }: { children: React.ReactNode }) => {
       //set delay for the logo animation
       setTimeout(() => {
         setLoading(false);
-      }, 4000);
+      }, 6000);
     };
 
     if (document.readyState === "complete") handleComplete();
