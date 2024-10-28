@@ -22,7 +22,7 @@ export default function CategoryCard({
           isLarge ? "col-span-2" : "col-span-1"
         } h-40` + (className ? ` ${className}` : "")
       }
-      href={`/category/${id}`}
+      href={`/products?category=${id}`}
     >
       <Image
         fill

@@ -3,14 +3,7 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import {
-  Button,
-  ButtonGroup,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 
 import { Product } from "../types/types";
 
@@ -25,13 +18,18 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ProductCard from "@/components/ProductCard";
-import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
+//import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
-type SelectionOption = "shirts" | "dresses" | "cardigans";
+//type SelectionOption = "shirts" | "dresses" | "cardigans";
 type CategoryFilter = {
   category?: number;
   subcategory?: number;
 };
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+}
 
 function LoadingAnimation() {
   return (
@@ -51,6 +49,7 @@ function LoadingAnimation() {
 
 function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [fetchedCategories, setFetchedCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -58,7 +57,7 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const { setCart } = useCart();
   const { user } = useUser();
-
+  const [error, setError] = useState(false);
   const categoryId = searchParams.get("category")
     ? parseInt(searchParams.get("category") as string, 10)
     : undefined;
@@ -72,6 +71,19 @@ function ShopContent() {
   };
 
   useEffect(() => {
+    async function fetchCategories() {
+      try {
+        const response = await fetch(`/api/products/categories`);
+        const data = await response.json();
+
+        setFetchedCategories(data);
+        setError(false);
+      } catch (error) {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
     async function fetchProducts() {
       try {
         setIsLoading(true);
@@ -83,9 +95,10 @@ function ShopContent() {
           }),
         });
         const fetchedProducts = await fetch(
-          `/api/products?${queryParams.toString()}`
+          `/api/products?${queryParams.toString()}&category=${categoryId}`
         );
         const fetchedProductsData = await fetchedProducts.json();
+        //console.log(queryParams.toString());
         const products = fetchedProductsData.products;
 
         setProducts(products);
@@ -96,7 +109,7 @@ function ShopContent() {
         setIsLoading(false);
       }
     }
-
+    fetchCategories();
     fetchProducts();
   }, [page, filter.category, filter.subcategory]);
 
@@ -114,25 +127,6 @@ function ShopContent() {
       }
     }
   };
-
-  const categories = ["SHIRTS", "DRESSES", "CARDIGANS", "JUPES"];
-  const [selectedOption, setSelectedOption] = useState<Set<SelectionOption>>(
-    () => new Set<SelectionOption>(["shirts"])
-  );
-
-  const descriptionsMap: Record<SelectionOption, string> = {
-    shirts: "All new shirts",
-    dresses: "All new Dresses",
-    cardigans: "All new Cardigans",
-  };
-
-  const labelsMap: Record<SelectionOption, string> = {
-    shirts: "Choose new shirt",
-    dresses: "Choose new dress",
-    cardigans: "Choose new Cardigan",
-  };
-
-  const selectedOptionValue = Array.from(selectedOption)[0];
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -152,17 +146,21 @@ function ShopContent() {
     />
   );
 
+  if (error) {
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="w-full">
         <nav className="flex flex-wrap justify-center items-center pb-4 mb-7">
-          {categories.map((category) => (
+          {fetchedCategories.map((category) => (
             <Button
-              key={category}
+              key={category.id}
               className="font-semibold text-sm sm:text-base lg:text-lg mx-1 sm:mx-2 my-1"
               variant="light"
+              onAbort={() => {}}
             >
-              {category}
+              {category.name}
             </Button>
           ))}
         </nav>
@@ -170,7 +168,7 @@ function ShopContent() {
           <p className="text-gray-600 mb-2 sm:mb-0">
             SHOWING {products.length} of {totalProducts} RESULTS
           </p>
-          <ButtonGroup variant="flat">
+          {/*<ButtonGroup variant="flat">
             <Button>
               {selectedOptionValue
                 ? labelsMap[selectedOptionValue]
@@ -199,7 +197,7 @@ function ShopContent() {
                 ))}
               </DropdownMenu>
             </Dropdown>
-          </ButtonGroup>
+          </ButtonGroup>*/}
         </div>
       </div>
       <div className="flex-grow">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import { Minus, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { addToCart } from "@/app/util/utils";
 import { useCart } from "@/app/contexts/CartContext";
@@ -58,6 +59,7 @@ type ExtendedCart = Omit<ImportedCart, "items"> & {
 };
 
 export default function ProductDetailPage() {
+  const router = useRouter();
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<RelatedProduct[]>([]);
@@ -328,7 +330,13 @@ export default function ProductDetailPage() {
           <h2 className="text-2xl font-bold mb-6">You may also like</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {relatedProducts.map((product) => (
-              <Card key={product.id} className="rounded overflow-clip">
+              <Card
+                key={product.id}
+                className="rounded overflow-clip"
+                onClick={() => {
+                  router.push(`../products/${product.id}`);
+                }}
+              >
                 <CardContent className="p-0">
                   <Image
                     alt={product.name}

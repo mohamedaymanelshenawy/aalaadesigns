@@ -187,10 +187,10 @@ export default function Home() {
               return (
                 <CategoryCard
                   key={index}
-                  //className={`${
-                  //  isLarge ? "sm:col-span-2" : ""
-                  //} ${index % 4 === 0 || index % 4 === 3 ? "aspect-[3/4]" : "aspect-[3/2]"}`}
-                  id={index}
+                  className={`${
+                    isLarge ? "sm:col-span-2" : ""
+                  } ${index % 4 === 0 || index % 4 === 3 ? "aspect-[3/4]" : "aspect-[3/2]"}`}
+                  id={category.id}
                   isLarge={isLarge}
                   name={category.name}
                 />
