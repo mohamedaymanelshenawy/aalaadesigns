@@ -147,14 +147,12 @@ export default function CartPage() {
                 transition={{ duration: 0.3 }}
               >
                 <CartItem
-                  color="default"
-                  imageSrc={
-                    item.image_path || "/placeholder.svg?height=100&width=100"
-                  }
+                  color={item.selectedColor || "default"}
+                  imageSrc={"/shirt.png"}
                   name={item.name}
                   price={`${item.price} EGP`}
                   quantity={item.count}
-                  size="default"
+                  size={item.selectedSize || "default"}
                   onDecrement={() =>
                     handleQuantityChange(item.id, Math.max(item.count - 1, 1))
                   }

@@ -18,13 +18,12 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ProductCard from "@/components/ProductCard";
-//import { ChevronDownIcon } from "@/components/ui/ChevronDownIcon";
 
-//type SelectionOption = "shirts" | "dresses" | "cardigans";
 type CategoryFilter = {
-  category?: number;
-  subcategory?: number;
+  category?: number | null;
+  subcategory?: number | null;
 };
+
 interface Category {
   id: number;
   name: string;
@@ -50,86 +49,107 @@ function LoadingAnimation() {
 function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [fetchedCategories, setFetchedCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalProducts, setTotalProducts] = useState(0);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [page, setPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalProducts, setTotalProducts] = useState<number>(0);
   const searchParams = useSearchParams();
   const { setCart } = useCart();
   const { user } = useUser();
-  const [error, setError] = useState(false);
-  const categoryId = searchParams.get("category")
-    ? parseInt(searchParams.get("category") as string, 10)
-    : undefined;
-  const subcategoryId = searchParams.get("subcategory")
-    ? parseInt(searchParams.get("subcategory") as string, 10)
-    : undefined;
-
-  const filter: CategoryFilter = {
-    category: categoryId,
-    subcategory: subcategoryId,
-  };
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
-    async function fetchCategories() {
-      try {
-        const response = await fetch(`/api/products/categories`);
-        const data = await response.json();
+    const categoryId = searchParams.get("category")
+      ? parseInt(searchParams.get("category") as string, 10)
+      : null;
+    const subcategoryId = searchParams.get("subcategory")
+      ? parseInt(searchParams.get("subcategory") as string, 10)
+      : null;
 
-        setFetchedCategories(data);
-        setError(false);
-      } catch (error) {
-        setError(true);
-      } finally {
-        setIsLoading(false);
-      }
+    setSelectedCategory(categoryId);
+
+    const filter: CategoryFilter = {
+      category: categoryId,
+      subcategory: subcategoryId,
+    };
+
+    fetchProducts(filter, page);
+  }, [searchParams, page]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchCartItems();
     }
-    async function fetchProducts() {
-      try {
-        setIsLoading(true);
-        const queryParams = new URLSearchParams({
-          page: page.toString(),
-          ...(filter.category && { category: filter.category.toString() }),
-          ...(filter.subcategory && {
+  }, [user]);
+
+  async function fetchProducts(filter: CategoryFilter, currentPage: number) {
+    try {
+      setIsLoading(true);
+      const queryParams = new URLSearchParams({
+        page: currentPage.toString(),
+        ...(filter.category !== null &&
+          filter.category !== undefined && {
+            category: filter.category.toString(),
+          }),
+        ...(filter.subcategory !== null &&
+          filter.subcategory !== undefined && {
             subcategory: filter.subcategory.toString(),
           }),
-        });
-        const fetchedProducts = await fetch(
-          `/api/products?${queryParams.toString()}&category=${categoryId}`
-        );
-        const fetchedProductsData = await fetchedProducts.json();
-        //console.log(queryParams.toString());
-        const products = fetchedProductsData.products;
+      });
 
-        setProducts(products);
-        setTotalProducts(fetchedProductsData.totalProducts);
-        setTotalPages(fetchedProductsData.totalPages);
-      } catch (error) {
-      } finally {
-        setIsLoading(false);
-      }
+      const response = await fetch(`/api/products?${queryParams.toString()}`);
+      const fetchedProductsData = await response.json();
+
+      setProducts(fetchedProductsData.products);
+      setTotalProducts(fetchedProductsData.totalProducts);
+      setTotalPages(fetchedProductsData.totalPages);
+      setError(false);
+    } catch (error) {
+      setError(true);
+    } finally {
+      setIsLoading(false);
     }
-    fetchCategories();
-    fetchProducts();
-  }, [page, filter.category, filter.subcategory]);
+  }
 
-  useEffect(() => {
-    fetchCartItems();
-  }, [user]);
+  async function fetchCategories() {
+    try {
+      const response = await fetch(`/api/products/categories`);
+      const data = await response.json();
+
+      setFetchedCategories(data);
+      setError(false);
+    } catch (error) {
+      setError(true);
+    }
+  }
 
   const fetchCartItems = async () => {
     if (user) {
-      const fetchCartItems = await fetch(`/api/cart?userId=${user?.id}`);
-      const cartData = await fetchCartItems.json();
+      try {
+        const fetchCartItems = await fetch(`/api/cart?userId=${user.id}`);
+        const cartData = await fetchCartItems.json();
 
-      if (cartData && cartData.items) {
-        setCart(cartData);
-      }
+        if (cartData && cartData.items) {
+          setCart(cartData);
+        }
+      } catch (error) {}
     }
   };
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
+    fetchProducts({ category: selectedCategory, subcategory: null }, newPage);
+  };
+
+  const handleCategoryChange = (category: number | null) => {
+    setSelectedCategory(category);
+    setPage(1);
+    fetchProducts({ category, subcategory: null }, 1);
   };
 
   const SkeletonPulse = () => (
@@ -147,57 +167,38 @@ function ShopContent() {
   );
 
   if (error) {
+    return <div>Error loading products. Please try again later.</div>;
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <div className="w-full">
         <nav className="flex flex-wrap justify-center items-center pb-4 mb-7">
+          <Button
+            key="all"
+            className="font-semibold text-sm sm:text-base lg:text-lg mx-1 sm:mx-2 my-1"
+            variant="light"
+            onClick={() => handleCategoryChange(null)}
+          >
+            All
+          </Button>
           {fetchedCategories.map((category) => (
             <Button
               key={category.id}
               className="font-semibold text-sm sm:text-base lg:text-lg mx-1 sm:mx-2 my-1"
               variant="light"
-              onAbort={() => {}}
+              onClick={() => handleCategoryChange(category.id)}
             >
               {category.name}
             </Button>
           ))}
         </nav>
         <div className="flex flex-col sm:flex-row justify-between items-center text-sm px-4 mb-7 sm:px-6 lg:px-8">
-          <p className="text-gray-600 mb-2 sm:mb-0">
-            SHOWING {products.length} of {totalProducts} RESULTS
-          </p>
-          {/*<ButtonGroup variant="flat">
-            <Button>
-              {selectedOptionValue
-                ? labelsMap[selectedOptionValue]
-                : "Select option"}
-            </Button>
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <Button isIconOnly>
-                  <ChevronDownIcon />
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                disallowEmptySelection
-                aria-label="options"
-                className="max-w-[300px]"
-                selectedKeys={selectedOption}
-                selectionMode="single"
-                onSelectionChange={(keys) =>
-                  setSelectedOption(keys as Set<SelectionOption>)
-                }
-              >
-                {(Object.keys(labelsMap) as SelectionOption[]).map((key) => (
-                  <DropdownItem key={key} description={descriptionsMap[key]}>
-                    {labelsMap[key]}
-                  </DropdownItem>
-                ))}
-              </DropdownMenu>
-            </Dropdown>
-          </ButtonGroup>*/}
+          {products && (
+            <p className="text-gray-600 mb-2 sm:mb-0">
+              SHOWING {products.length} of {totalProducts} RESULTS
+            </p>
+          )}
         </div>
       </div>
       <div className="flex-grow">
