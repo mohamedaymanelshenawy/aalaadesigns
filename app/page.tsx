@@ -4,11 +4,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, Button } from "@nextui-org/react";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Gorditas } from "next/font/google";
 import { useTheme } from "next-themes";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination } from "swiper/modules";
 
 import NewArraivalCard from "@/components/NewArraivalCard";
 import "swiper/css";
@@ -180,20 +178,17 @@ export default function Home() {
           <p className="text-lg sm:text-xl md:text-2xl mb-8">
             Mix & Match to level up your fashion game
           </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto">
             {fetchedCategories.map((category, index) => {
-              const isLarge = index % 4 === 1 || index % 4 === 2;
+              const isLarge = index % 3 !== 0;
 
               return (
-                <CategoryCard
-                  key={index}
-                  className={`${
-                    isLarge ? "sm:col-span-2" : ""
-                  } ${index % 4 === 0 || index % 4 === 3 ? "aspect-[3/4]" : "aspect-[3/2]"}`}
-                  id={category.id}
-                  isLarge={isLarge}
-                  name={category.name}
-                />
+                <div
+                  key={category.id}
+                  className={isLarge ? "md:col-span-2" : ""}
+                >
+                  <CategoryCard id={category.id} name={category.name} />
+                </div>
               );
             })}
           </div>
@@ -214,47 +209,16 @@ export default function Home() {
           <p className="text-lg sm:text-xl md:text-2xl mb-8">
             Take a look at our newest items
           </p>
-          <div className="container mx-auto px-4 py-8 relative">
-            <Swiper
-              breakpoints={{
-                410: {
-                  slidesPerView: 1,
-                },
-                640: {
-                  slidesPerView: 1,
-                },
-                768: {
-                  slidesPerView: 2,
-                },
-                1024: {
-                  slidesPerView: 3,
-                },
-              }}
-              modules={[Navigation, Pagination]}
-              navigation={{
-                nextEl: ".swiper-button-next",
-                prevEl: ".swiper-button-prev",
-              }}
-              pagination={{ clickable: true }}
-              spaceBetween={20}
-            >
-              {newArrivals.map((item, index) => (
-                <SwiperSlide key={index}>
-                  <NewArraivalCard
-                    description={item.description}
-                    name={item.name}
-                    path={item.path}
-                    price={item.price}
-                  />
-                </SwiperSlide>
-              ))}
-            </Swiper>
-            <div className="swiper-button-prev absolute left-0 top-1/2 transform -translate-y-1/2 z-10">
-              <ChevronLeft className="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" />
-            </div>
-            <div className="swiper-button-next absolute right-0 top-1/2 transform -translate-y-1/2 z-10">
-              <ChevronRight className="w-6 h-6 sm:w-8 sm:h-8 text-gray-500" />
-            </div>
+          <div className="container mx-auto px-4 py-8 relative flex">
+            {newArrivals.map((item, index) => (
+              <NewArraivalCard
+                key={index}
+                description={item.description}
+                name={item.name}
+                path={item.path}
+                price={item.price}
+              />
+            ))}
           </div>
         </div>
       </section>
