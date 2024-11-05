@@ -24,8 +24,6 @@ import {
   ShoppingBag,
   Home,
   Info,
-  Sun,
-  Moon,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -70,7 +68,7 @@ export default function ModernNavbar() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const { user, setUser } = useUser();
   const router = useRouter();
-  const { theme, setTheme } = useTheme();
+  const { theme } = useTheme();
   const { scrollY } = useScroll();
   const scrollProgress = useSpring(0, { stiffness: 300, damping: 30 });
 
