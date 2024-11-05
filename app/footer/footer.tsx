@@ -4,33 +4,39 @@ import Image from "next/image";
 import Link from "next/link";
 import { Facebook, Instagram } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+//import { useUser } from "../contexts/UserContext";
+
+//import { Button } from "@/components/ui/button";
+//import { Input } from "@/components/ui/input";
 
 export default function Footer() {
+  //const { user } = useUser();
+
   return (
     <footer className="w-full">
-      <div className="bg-gray-900 text-white py-12 px-4 bg-[url('/footer.png')] bg-cover bg-center">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Sign Up Now!</h2>
-          <p className="mb-6">
-            Get the Latest Beauty Secrets and level up your style
-          </p>
-          <form className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Input
-              className="max-w-xs bg-white bg-opacity-30 rounded-xl h-10"
-              placeholder="Your E-mail"
-              type="email"
-            />
-            <Button
-              className="bg-white rounded-xl text-black hover:bg-gray-200 w-36"
-              type="submit"
-            >
-              Submit
-            </Button>
-          </form>
+      {/*{!user && (
+        <div className="bg-gray-900 text-white py-12 px-4 bg-[url('/footer.png')] bg-cover bg-center">
+          <div className="max-w-6xl mx-auto text-center">
+            <h2 className="text-3xl font-bold mb-4">Sign Up Now!</h2>
+            <p className="mb-6">
+              Get the Latest Beauty Secrets and level up your style
+            </p>
+            <form className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Input
+                className="max-w-xs bg-white bg-opacity-30 rounded-xl h-10"
+                placeholder="Your E-mail"
+                type="email"
+              />
+              <Button
+                className="bg-white rounded-xl text-black hover:bg-gray-200 w-36"
+                type="submit"
+              >
+                Submit
+              </Button>
+            </form>
+          </div>
         </div>
-      </div>
+      )}*/}
       <div className="bg-black text-white py-8 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row">
           <div className="w-full sm:w-1/3 mb-8 sm:mb-0">
