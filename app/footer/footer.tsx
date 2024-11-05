@@ -1,9 +1,11 @@
 "use client";
-import { Input } from "@nextui-org/input";
-import { Button } from "@nextui-org/button";
-import { Image } from "@nextui-org/react";
+
+import Image from "next/image";
 import Link from "next/link";
 import { Facebook, Instagram } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Footer() {
   return (
@@ -16,12 +18,12 @@ export default function Footer() {
           </p>
           <form className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Input
-              className="max-w-xs bg-gray-800  rounded-2xl overflow-hidden"
+              className="max-w-xs bg-white bg-opacity-30 rounded-xl h-10"
               placeholder="Your E-mail"
               type="email"
             />
             <Button
-              className="bg-white rounded-2xl text-black hover:bg-gray-200"
+              className="bg-white rounded-xl text-black hover:bg-gray-200 w-36"
               type="submit"
             >
               Submit
@@ -29,30 +31,26 @@ export default function Footer() {
           </form>
         </div>
       </div>
-      <div className="bg-[#deb887] text-black py-8 px-4">
-        <div className="max-w-6xl mx-auto flex flex-wrap justify-between">
-          <div className="w-full sm:w-auto mb-8 sm:mb-0">
-            {/*<Link className="text-4xl font-bold" href="/">
-              AALAA DESIGNS
-            </Link>*/}
+      <div className="bg-black text-white py-8 px-4">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row">
+          <div className="w-full sm:w-1/3 mb-8 sm:mb-0">
             <Link className="inline-block" href="/">
               <Image
                 alt="AALAA Logo"
                 className="max-w-full h-auto"
                 height={150}
-                src="/logoblack.png"
+                src="/logowhite.png"
                 width={120}
               />
             </Link>
           </div>
-          <div className="flex flex-wrap justify-between w-full sm:w-auto">
+          <div className="w-full sm:w-2/3 flex flex-wrap justify-between">
             <div className="w-1/2 sm:w-auto mb-4 sm:mb-0 mr-8">
               <h3 className="font-bold mb-2">Customer Care</h3>
               <ul className="space-y-2">
                 <li>
                   <Link href="/faq">FAQ</Link>
                 </li>
-
                 <li>
                   <Link href="/contact">Contact Us</Link>
                 </li>
@@ -72,7 +70,7 @@ export default function Footer() {
                 </li>
               </ul>
             </div>
-            <div className="w-full sm:w-auto">
+            <div className="w-full sm:w-auto mt-4 sm:mt-0">
               <h3 className="font-bold mb-2">Follow Us</h3>
               <div className="flex space-x-4">
                 <Link

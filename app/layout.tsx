@@ -48,7 +48,6 @@ export default function RootLayout({
       <body
         className={clsx(
           "max-h-screen bg-background font-sans antialiased",
-          // eslint-disable-next-line prettier/prettier
           fontSans.variable
         )}
       >
@@ -60,7 +59,7 @@ export default function RootLayout({
               >
                 <div className="relative flex flex-col h-screen">
                   <CustomNavBar />
-                  <main className="container mx-auto max-w-[80rem] pt-10 px-2 flex-grow">
+                  <main className="pt-10 flex-grow">
                     {children}
                     <Analytics />
                     <SpeedInsights />

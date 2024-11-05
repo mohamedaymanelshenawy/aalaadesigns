@@ -240,7 +240,7 @@ export default function ModernNavbar() {
           ) : (
             <>
               <Button
-                className="w-full justify-start text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100"
+                className="w-full justify-start text-gray-600 bg-white"
                 variant="ghost"
                 onClick={() => {
                   setIsSidebarOpen(false);
@@ -366,7 +366,10 @@ export default function ModernNavbar() {
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-white rounded-xl"
+              >
                 {user ? (
                   <>
                     <DropdownMenuItem className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800">
@@ -417,7 +420,7 @@ export default function ModernNavbar() {
 
             <TooltipProvider>
               <Tooltip>
-                <TooltipTrigger asChild>
+                {/*<TooltipTrigger asChild>
                   <Button
                     className="icon-button transition-colors duration-200"
                     size="icon"
@@ -430,7 +433,7 @@ export default function ModernNavbar() {
                     <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
                     <span className="sr-only">Toggle theme</span>
                   </Button>
-                </TooltipTrigger>
+                </TooltipTrigger>*/}
                 <TooltipContent>
                   <p>Toggle theme</p>
                 </TooltipContent>
