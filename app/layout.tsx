@@ -51,27 +51,27 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        {/*<AppWrapper>*/}
-        <UserProvider>
-          <CartProvider>
-            <Providers
-              themeProps={{ attribute: "class", defaultTheme: "light" }}
-            >
-              <div className="relative flex flex-col h-screen">
-                <CustomNavBar />
-                <main className="pt-10 flex-grow">
-                  {children}
-                  <Analytics />
-                  <SpeedInsights />
-                </main>
-                <footer>
-                  <Footer />
-                </footer>
-              </div>
-            </Providers>
-          </CartProvider>
-        </UserProvider>
-        {/*</AppWrapper>*/}
+        <AppWrapper>
+          <UserProvider>
+            <CartProvider>
+              <Providers
+                themeProps={{ attribute: "class", defaultTheme: "light" }}
+              >
+                <div className="relative flex flex-col h-screen">
+                  <CustomNavBar />
+                  <main className="pt-10 flex-grow">
+                    {children}
+                    <Analytics />
+                    <SpeedInsights />
+                  </main>
+                  <footer>
+                    <Footer />
+                  </footer>
+                </div>
+              </Providers>
+            </CartProvider>
+          </UserProvider>
+        </AppWrapper>
       </body>
     </html>
   );

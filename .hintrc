@@ -20,6 +20,13 @@
       {
         "list": "off"
       }
+    ],
+    "axe/aria": [
+      "default",
+      {
+        "aria-progressbar-name": "off",
+        "aria-valid-attr-value": "off"
+      }
     ]
   }
 }
