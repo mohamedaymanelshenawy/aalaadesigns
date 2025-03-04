@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { Loader2, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import { House } from "lucide-react";
 
 import { useCart } from "@/app/contexts/CartContext";
 import { useUser } from "@/app/contexts/UserContext";
@@ -26,6 +27,9 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     router.push("/billing");
+  };
+  const goToHomePage = () => {
+    router.push("../");
   };
 
   async function fetchCartItems() {
@@ -103,14 +107,17 @@ export default function CartPage() {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r from-red-500 to-yellow-500">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-r">
         <AlertCircle className="w-16 h-16 text-white" />
-        <p className="mt-4 text-xl font-semibold text-white">Oops! {error}</p>
+        <p className="mt-4 text-xl font-semibold text-black">
+          Your Cart is empty!
+        </p>
         <Button
-          className="mt-4 bg-white text-red-500 hover:bg-red-100"
-          onClick={fetchCartItems}
+          className="mt-4 bg-white border-1 border-b rounded text-black hover:bg-gray-100"
+          onClick={goToHomePage}
         >
-          Try Again
+          <House className="mr-5" />
+          Home
         </Button>
       </div>
     );

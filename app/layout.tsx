@@ -10,7 +10,7 @@ import { Providers } from "./providers";
 import { UserProvider } from "./contexts/UserContext";
 import Footer from "./footer/footer";
 import { CartProvider } from "./contexts/CartContext";
-import AppWrapper from "./AppWrapper";
+//import AppWrapper from "./AppWrapper";
 
 import { siteConfig } from "@/config/site";
 import { fontSans } from "@/config/fonts";
@@ -51,27 +51,27 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
-        <AppWrapper>
-          <UserProvider>
-            <CartProvider>
-              <Providers
-                themeProps={{ attribute: "class", defaultTheme: "light" }}
-              >
-                <div className="relative flex flex-col h-screen">
-                  <CustomNavBar />
-                  <main className="pt-10 flex-grow">
-                    {children}
-                    <Analytics />
-                    <SpeedInsights />
-                  </main>
-                  <footer>
-                    <Footer />
-                  </footer>
-                </div>
-              </Providers>
-            </CartProvider>
-          </UserProvider>
-        </AppWrapper>
+        {/*<AppWrapper>*/}
+        <UserProvider>
+          <CartProvider>
+            <Providers
+              themeProps={{ attribute: "class", defaultTheme: "light" }}
+            >
+              <div className="relative flex flex-col h-screen">
+                <CustomNavBar />
+                <main className="pt-10 flex-grow">
+                  {children}
+                  <Analytics />
+                  <SpeedInsights />
+                </main>
+                <footer>
+                  <Footer />
+                </footer>
+              </div>
+            </Providers>
+          </CartProvider>
+        </UserProvider>
+        {/*</AppWrapper>*/}
       </body>
     </html>
   );
