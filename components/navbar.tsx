@@ -302,7 +302,7 @@ export default function ModernNavbar() {
                 src="/logoonly.png"
               />
               <motion.span className="font-bold text-lg hidden sm:inline bg-clip-text text-black bg-gradient-to-r from-primary to-secondary">
-                AALAA designs
+                AALAA Designs
               </motion.span>
             </motion.div>
           </div>
