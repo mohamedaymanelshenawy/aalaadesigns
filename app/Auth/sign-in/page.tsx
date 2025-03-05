@@ -150,7 +150,7 @@ export default function Signin() {
                       <Link className="text-blue-600" href="/Auth/sign-up">
                         No Account? Sign up
                       </Link>
-                      <Link className="text-blue-600" href="#">
+                      <Link className="text-blue-600" href="auth/forgot-password">
                         Forgot Password?
                       </Link>
                     </div>
