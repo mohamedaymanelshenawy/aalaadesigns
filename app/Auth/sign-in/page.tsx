@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, Input, Button, Link, Image } from "@nextui-org/react";
+import { Card, CardBody, Input, Button, Link, Image } from "@heroui/react";
 import { useTheme } from "next-themes";
 import { XCircle, X } from "lucide-react";
 

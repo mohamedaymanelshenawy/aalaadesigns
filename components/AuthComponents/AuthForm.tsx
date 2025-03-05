@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { Image, Link } from "@nextui-org/react";
+import { Image, Link } from "@heroui/react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";

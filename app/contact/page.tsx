@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { Card, CardBody, Input, Button } from "@nextui-org/react";
+import { Card, CardBody, Input, Button } from "@heroui/react";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({

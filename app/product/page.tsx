@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useTheme } from "next-themes";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";

@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { ShoppingCart, CreditCard } from "lucide-react";
 
+import { addToCart } from "@/app/util/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -60,12 +61,13 @@ function ShopContent() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const searchParams = useSearchParams();
-  const { setCart, addToCart } = useCart();
+  const { cart, setCart } = useCart();
   const { user } = useUser();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [error, setError] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  const [productsInCart, setProductsInCart] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string>("newest");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [layoutView, setLayoutView] = useState<"grid" | "list">("grid");
@@ -97,6 +99,15 @@ function ShopContent() {
       fetchCartItems();
     }
   }, [user]);
+
+  // Track which products are in the cart
+  useEffect(() => {
+    if (cart && cart.items) {
+      const productIds = cart.items.map((item) => item.id);
+
+      setProductsInCart(productIds);
+    }
+  }, [cart]);
 
   async function fetchProducts(filter: CategoryFilter, currentPage: number) {
     try {
@@ -163,15 +174,109 @@ function ShopContent() {
     fetchProducts({ category, subcategory: null }, 1);
   };
 
-  const handleAddToCart = (product: Product) => {
-    addToCart(product);
+  const handleAddToCart = async (product: Product) => {
+    if (!user) return;
+
+    try {
+      // Call the utility function to add the product to the cart in the backend
+      const response = await addToCart({
+        productId: product.id,
+        count: 1,
+        user: user,
+      });
+
+      if (response && response.status === 200) {
+        // Update the cart state locally
+        setCart((prevCart) => {
+          // If the cart is empty or undefined, initialize it
+          if (!prevCart || !prevCart.items) {
+            return {
+              id: 0,
+              items: [{ ...product, count: 1 }],
+            };
+          }
+
+          // Check if the product is already in the cart
+          const existingItemIndex = prevCart.items.findIndex(
+            (item) => item.id === product.id
+          );
+
+          if (existingItemIndex > -1) {
+            // If it exists, update its quantity
+            const updatedItems = [...prevCart.items];
+
+            updatedItems[existingItemIndex].count += 1;
+
+            return {
+              ...prevCart,
+              items: updatedItems,
+            };
+          } else {
+            // If not, add it as a new item
+            return {
+              ...prevCart,
+              items: [...prevCart.items, { ...product, count: 1 }],
+            };
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+    }
   };
 
-  const handleCheckoutNow = (product: Product) => {
-    addToCart(product);
-    // Navigate to checkout page or open checkout modal
-    // This is a placeholder - implement actual checkout logic
-    console.log("Checkout now with product:", product);
+  const handleCheckoutNow = async (product: Product) => {
+    if (!user) return;
+
+    try {
+      // First add to cart
+      const response = await addToCart({
+        productId: product.id,
+        count: 1,
+        user: user,
+      });
+
+      if (response && response.status === 200) {
+        // Update the cart state locally
+        setCart((prevCart) => {
+          // If the cart is empty or undefined, initialize it
+          if (!prevCart || !prevCart.items) {
+            return {
+              id: 0,
+              items: [{ ...product, count: 1 }],
+            };
+          }
+
+          // Check if the product is already in the cart
+          const existingItemIndex = prevCart.items.findIndex(
+            (item) => item.id === product.id
+          );
+
+          if (existingItemIndex > -1) {
+            // If it exists, update its quantity
+            const updatedItems = [...prevCart.items];
+
+            updatedItems[existingItemIndex].count += 1;
+
+            return {
+              ...prevCart,
+              items: updatedItems,
+            };
+          } else {
+            // If not, add it as a new item
+            return {
+              ...prevCart,
+              items: [...prevCart.items, { ...product, count: 1 }],
+            };
+          }
+        });
+
+        // Navigate to checkout page
+        window.location.href = "/checkout";
+      }
+    } catch (error) {
+      console.error("Error checking out:", error);
+    }
   };
 
   const SkeletonPulse = () => (
@@ -534,14 +639,21 @@ function ShopContent() {
                       {/* Add to Cart Button */}
                       <button
                         className={`
-                          text-sm font-medium py-3 px-4 rounded-full bg-white border border-gray-300 
-                          hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 flex items-center justify-center
+                          text-sm font-medium py-3 px-4 rounded-full 
+                          ${
+                            productsInCart.includes(product.id)
+                              ? "bg-black text-white hover:bg-gray-800"
+                              : "bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
+                          } 
+                          transition-all duration-300 flex items-center justify-center
                           ${layoutView === "list" ? "flex-1" : "w-full"}
                         `}
                         onClick={() => handleAddToCart(product)}
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
-                        Add to Cart
+                        {productsInCart.includes(product.id)
+                          ? "In Cart"
+                          : "Add to Cart"}
                       </button>
 
                       {/* Checkout Now Button */}
