@@ -23,4 +23,17 @@ export interface Cart {
   items: CartItem[];
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  description: string;
+  subcategories: Subcategory[];
+}
+
+export interface Subcategory {
+  id: number;
+  name: string;
+  description: string;
+  categoryid: number;
+}
 export type CartState = Cart | null;

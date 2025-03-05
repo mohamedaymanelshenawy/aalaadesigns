@@ -6,11 +6,35 @@ export async function GET(req: Request) {
   const categoryID = searchParams.get("categoryID");
 
   if (!categoryID) {
-    const data = await sql`SELECT * FROM categories`;
+    const categories = await sql`SELECT * FROM categories`;
+    const subcategories = await sql`SELECT * FROM subcategory`;
 
-    return NextResponse.json(data.rows);
+    // Create a category map
+    const categoryMap = new Map<number, any>();
+
+    // Initialize each category with an empty subcategories array
+    categories.rows.forEach((category) => {
+      categoryMap.set(category.id, { ...category, subcategories: [] });
+    });
+
+    // Assign subcategories to their respective categories
+    subcategories.rows.forEach((subcategory) => {
+      const parentCategory = categoryMap.get(subcategory.categoryid); // Ensure correct case
+
+      if (parentCategory) {
+        parentCategory.subcategories.push(subcategory);
+      }
+    });
+
+    return NextResponse.json(Array.from(categoryMap.values()));
   }
-  const data = await sql`SELECT * FROM categories WHERE id = ${categoryID}`;
 
-  return NextResponse.json(data.rows[0]);
+  const category = await sql`SELECT * FROM categories WHERE id = ${categoryID}`;
+  const subcategories =
+    await sql`SELECT * FROM subcategory WHERE categoryID = ${categoryID}`;
+
+  return NextResponse.json({
+    category: category.rows[0],
+    subcategories: subcategories.rows,
+  });
 }

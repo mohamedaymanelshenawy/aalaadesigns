@@ -50,7 +50,7 @@ The project uses environment variables for configuration. You can set these vari
 
 The project has the following folder structure:
 
-```
+```plaintext
 AalaaDesigns/
 ├── .env.development.local
 ├── .eslintignore
