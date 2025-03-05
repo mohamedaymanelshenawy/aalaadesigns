@@ -1,53 +1,103 @@
-# Next.js & NextUI Template
+# AalaaDesigns
 
-This is a template for creating applications using Next.js 14 (app directory) and NextUI (v2).
+AalaaDesigns is a modern web application built with Next.js, TypeScript, and Tailwind CSS. This project aims to provide a seamless and responsive user experience.
 
-[Try it on CodeSandbox](https://githubbox.com/heroui/next-app-template)
+## Table of Contents
 
-## Technologies Used
+- [Installation](#installation)
+- [Development](#development)
+- [Building](#building)
+- [Configuration](#configuration)
+- [Folder Structure](#folder-structure)
+- [Contributing](#contributing)
+- [License](#license)
 
-- [Next.js 14](https://nextjs.org/docs/getting-started)
-- [NextUI v2](https://nextui.org/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Tailwind Variants](https://tailwind-variants.org)
-- [TypeScript](https://www.typescriptlang.org/)
-- [Framer Motion](https://www.framer.com/motion/)
-- [next-themes](https://github.com/pacocoursey/next-themes)
+## Installation
 
-## How to Use
+To get started with the project, clone the repository and install the dependencies:
 
-### Use the template with create-next-app
-
-To create a new project based on this template using `create-next-app`, run the following command:
-
-```bash
-npx create-next-app -e https://github.com/heroui/next-app-template
-```
-
-### Install dependencies
-
-You can use one of them `npm`, `yarn`, `pnpm`, `bun`, Example using `npm`:
-
-```bash
+```sh
+git clone https://github.com/yourusername/AalaaDesigns.git
+cd AalaaDesigns
 npm install
 ```
 
-### Run the development server
+## Development
 
-```bash
+To start the development server, run:
+
+```sh
 npm run dev
 ```
 
-### Setup pnpm (optional)
+This will start the Next.js development server on `http://localhost:3000`.
 
-If you are using `pnpm`, you need to add the following code to your `.npmrc` file:
+## Building
 
-```bash
-public-hoist-pattern[]=*@heroui/*
+To build the project for production, run:
+
+```sh
+npm run build
 ```
 
-After modifying the `.npmrc` file, you need to run `pnpm install` again to ensure that the dependencies are installed correctly.
+This will create an optimized production build in the `.next` directory.
+
+## Configuration
+
+The project uses environment variables for configuration. You can set these variables in the `.env.development.local` file for development.
+
+## Folder Structure
+
+The project has the following folder structure:
+
+```
+AalaaDesigns/
+├── .env.development.local
+├── .eslintignore
+├── .eslintrc.json
+├── .gitignore
+├── .hintrc
+├── .npmrc
+├── components.json
+├── database_schema.json
+├── LICENSE
+├── next-env.d.ts
+├── next.config.js
+├── package.json
+├── postcss.config.js
+├── README.md
+├── tailwind.config.js
+├── tsconfig.json
+├── .next/
+│   ├── app-build-manifest.json
+│   ├── build-manifest.json
+│   ├── fallback-build-manifest.json
+│   ├── package.json
+│   └── ...
+├── .swm/
+├── .vercel/
+├── .vscode/
+├── app/
+├── components/
+├── config/
+├── lib/
+├── public/
+├── styles/
+└── types/
+```
+
+- **app/**: Contains the main application code.
+- **components/**: Contains reusable UI components.
+- **config/**: Contains configuration files.
+- **lib/**: Contains utility functions and libraries.
+- **public/**: Contains static assets.
+- **styles/**: Contains global styles.
+- **types/**: Contains TypeScript type definitions.
+
+## Contributing
+
+Contributions are welcome! Please open an issue or submit a pull request for any changes.
 
 ## License
 
-Licensed under the [MIT license](https://github.com/heroui/next-app-template/blob/main/LICENSE).
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
