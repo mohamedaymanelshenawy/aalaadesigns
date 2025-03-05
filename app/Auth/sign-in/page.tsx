@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, Input, Button, Link, Image } from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
+import { Image } from "@heroui/image";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Link } from "@heroui/link";
 import { useTheme } from "next-themes";
 import { XCircle, X } from "lucide-react";
 
@@ -150,7 +154,10 @@ export default function Signin() {
                       <Link className="text-blue-600" href="/Auth/sign-up">
                         No Account? Sign up
                       </Link>
-                      <Link className="text-blue-600" href="auth/forgot-password">
+                      <Link
+                        className="text-blue-600"
+                        href="auth/forgot-password"
+                      >
                         Forgot Password?
                       </Link>
                     </div>

@@ -1,7 +1,6 @@
 import "@/styles/globals.css";
 
 import { Metadata } from "next";
-//import { Image } from "@heroui/react";
 import clsx from "clsx";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";

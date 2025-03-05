@@ -1,14 +1,10 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import {
-  Accordion,
-  AccordionItem,
-  Card,
-  CardBody,
-  Button,
-  Input,
-} from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Accordion, AccordionItem } from "@heroui/accordion";
 import { ChevronDown, Search, Mail } from "lucide-react";
 
 const faqs = [

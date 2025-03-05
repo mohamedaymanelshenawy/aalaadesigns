@@ -1,5 +1,6 @@
 import React from "react";
-import { Card, Button } from "@heroui/react";
+import { Card } from "@heroui/card";
+import { Button } from "@heroui/button";
 
 import Shoppingbag from "@/components/svgs/Shoppingbag";
 

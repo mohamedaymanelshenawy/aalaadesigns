@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 "use client";
 
 import type { Product } from "../types/types";
@@ -6,15 +5,13 @@ import type { Product } from "../types/types";
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import Image from "next/image";
-import { ShoppingCart, CreditCard } from "lucide-react";
 
-import { addToCart } from "@/app/util/utils";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Slider } from "@/components/ui/slider";
+import ProductCard from "@/components/ProductCard";
 import { useCart } from "@/app/contexts/CartContext";
 import { useUser } from "@/app/contexts/UserContext";
 import {
@@ -31,10 +28,18 @@ type CategoryFilter = {
   subcategory?: number | null;
 };
 
+interface Subcategory {
+  id: number;
+  name: string;
+  description: string;
+  categoryid: number;
+}
+
 interface Category {
   id: number;
   name: string;
   description: string;
+  subcategories: Subcategory[];
 }
 
 function LoadingAnimation() {
@@ -55,22 +60,43 @@ function LoadingAnimation() {
 
 function ShopContent() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [fetchedCategories, setFetchedCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isCategoriesLoading, setIsCategoriesLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalProducts, setTotalProducts] = useState<number>(0);
   const searchParams = useSearchParams();
-  const { cart, setCart } = useCart();
+  const { setCart } = useCart();
   const { user } = useUser();
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedSubcategory, setSelectedSubcategory] = useState<number | null>(
+    null
+  );
   const [error, setError] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [productsInCart, setProductsInCart] = useState<number[]>([]);
   const [sortBy, setSortBy] = useState<string>("newest");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const [layoutView, setLayoutView] = useState<"grid" | "list">("grid");
+
+  // Force grid view on mobile
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setLayoutView("grid");
+      }
+    };
+
+    // Set initial value
+    handleResize();
+
+    // Add event listener
+    window.addEventListener("resize", handleResize);
+
+    // Clean up
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const categoryId = searchParams.get("category")
@@ -81,6 +107,7 @@ function ShopContent() {
       : null;
 
     setSelectedCategory(categoryId);
+    setSelectedSubcategory(subcategoryId);
 
     const filter: CategoryFilter = {
       category: categoryId,
@@ -99,15 +126,6 @@ function ShopContent() {
       fetchCartItems();
     }
   }, [user]);
-
-  // Track which products are in the cart
-  useEffect(() => {
-    if (cart && cart.items) {
-      const productIds = cart.items.map((item) => item.id);
-
-      setProductsInCart(productIds);
-    }
-  }, [cart]);
 
   async function fetchProducts(filter: CategoryFilter, currentPage: number) {
     try {
@@ -140,13 +158,16 @@ function ShopContent() {
 
   async function fetchCategories() {
     try {
+      setIsCategoriesLoading(true);
       const response = await fetch(`/api/products/categories`);
       const data = await response.json();
 
-      setFetchedCategories(data);
+      setCategories(data);
       setError(false);
     } catch (error) {
       setError(true);
+    } finally {
+      setIsCategoriesLoading(false);
     }
   }
 
@@ -165,118 +186,37 @@ function ShopContent() {
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
-    fetchProducts({ category: selectedCategory, subcategory: null }, newPage);
+    fetchProducts(
+      { category: selectedCategory, subcategory: selectedSubcategory },
+      newPage
+    );
   };
 
-  const handleCategoryChange = (category: number | null) => {
-    setSelectedCategory(category);
+  const handleCategoryChange = (categoryId: number) => {
+    if (selectedCategory === categoryId) {
+      setSelectedCategory(null);
+      setSelectedSubcategory(null);
+      fetchProducts({ category: null, subcategory: null }, 1);
+    } else {
+      setSelectedCategory(categoryId);
+      setSelectedSubcategory(null);
+      fetchProducts({ category: categoryId, subcategory: null }, 1);
+    }
     setPage(1);
-    fetchProducts({ category, subcategory: null }, 1);
   };
 
-  const handleAddToCart = async (product: Product) => {
-    if (!user) return;
-
-    try {
-      // Call the utility function to add the product to the cart in the backend
-      const response = await addToCart({
-        productId: product.id,
-        count: 1,
-        user: user,
-      });
-
-      if (response && response.status === 200) {
-        // Update the cart state locally
-        setCart((prevCart) => {
-          // If the cart is empty or undefined, initialize it
-          if (!prevCart || !prevCart.items) {
-            return {
-              id: 0,
-              items: [{ ...product, count: 1 }],
-            };
-          }
-
-          // Check if the product is already in the cart
-          const existingItemIndex = prevCart.items.findIndex(
-            (item) => item.id === product.id
-          );
-
-          if (existingItemIndex > -1) {
-            // If it exists, update its quantity
-            const updatedItems = [...prevCart.items];
-
-            updatedItems[existingItemIndex].count += 1;
-
-            return {
-              ...prevCart,
-              items: updatedItems,
-            };
-          } else {
-            // If not, add it as a new item
-            return {
-              ...prevCart,
-              items: [...prevCart.items, { ...product, count: 1 }],
-            };
-          }
-        });
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
+  const handleSubcategoryChange = (subcategoryId: number) => {
+    if (selectedSubcategory === subcategoryId) {
+      setSelectedSubcategory(null);
+      fetchProducts({ category: selectedCategory, subcategory: null }, 1);
+    } else {
+      setSelectedSubcategory(subcategoryId);
+      fetchProducts(
+        { category: selectedCategory, subcategory: subcategoryId },
+        1
+      );
     }
-  };
-
-  const handleCheckoutNow = async (product: Product) => {
-    if (!user) return;
-
-    try {
-      // First add to cart
-      const response = await addToCart({
-        productId: product.id,
-        count: 1,
-        user: user,
-      });
-
-      if (response && response.status === 200) {
-        // Update the cart state locally
-        setCart((prevCart) => {
-          // If the cart is empty or undefined, initialize it
-          if (!prevCart || !prevCart.items) {
-            return {
-              id: 0,
-              items: [{ ...product, count: 1 }],
-            };
-          }
-
-          // Check if the product is already in the cart
-          const existingItemIndex = prevCart.items.findIndex(
-            (item) => item.id === product.id
-          );
-
-          if (existingItemIndex > -1) {
-            // If it exists, update its quantity
-            const updatedItems = [...prevCart.items];
-
-            updatedItems[existingItemIndex].count += 1;
-
-            return {
-              ...prevCart,
-              items: updatedItems,
-            };
-          } else {
-            // If not, add it as a new item
-            return {
-              ...prevCart,
-              items: [...prevCart.items, { ...product, count: 1 }],
-            };
-          }
-        });
-
-        // Navigate to checkout page
-        window.location.href = "/checkout";
-      }
-    } catch (error) {
-      console.error("Error checking out:", error);
-    }
+    setPage(1);
   };
 
   const SkeletonPulse = () => (
@@ -354,26 +294,8 @@ function ShopContent() {
             <div>
               <h3 className="font-bold mb-4 text-gray-800 text-lg">Price</h3>
               <div className="p-4">
-                {
-                  // react/no-unknown-property
-                }
-                <style global jsx>{`
-                  .slider-track {
-                    height: 4px !important;
-                    background-color: #000 !important;
-                  }
-                  .slider-range {
-                    background-color: #666 !important;
-                  }
-                  .slider-thumb {
-                    background-color: white !important;
-                    border: 2px solid black !important;
-                    width: 16px !important;
-                    height: 16px !important;
-                  }
-                `}</style>
                 <Slider
-                  className="mb-4 slider-track"
+                  className="mb-4"
                   defaultValue={[0, 1000]}
                   max={1000}
                   step={1}
@@ -407,7 +329,7 @@ function ShopContent() {
                     <Checkbox
                       checked={selectedColors.includes(color.toLowerCase())}
                       id={`color-${color.toLowerCase()}`}
-                      onCheckedChange={(checked: any) => {
+                      onCheckedChange={(checked) => {
                         if (checked) {
                           setSelectedColors([
                             ...selectedColors,
@@ -438,73 +360,55 @@ function ShopContent() {
               <h3 className="font-bold mb-4 text-gray-800 text-lg">
                 Categories
               </h3>
-              <div className="space-y-4">
-                <div className="font-medium text-gray-800">Clothings</div>
-                <div className="ml-4 space-y-3">
-                  {[
-                    "Basic",
-                    "Dresses",
-                    "Abbayas",
-                    "Tunics",
-                    "Tops",
-                    "Skirts",
-                  ].map((cat) => (
-                    <div key={cat} className="flex items-center">
-                      <Checkbox id={`cat-${cat.toLowerCase()}`} />
-                      <Label
-                        className="ml-2 cursor-pointer text-gray-700"
-                        htmlFor={`cat-${cat.toLowerCase()}`}
+              {isCategoriesLoading ? (
+                <div className="py-4 text-center">
+                  <LoadingAnimation />
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {categories.map((category) => (
+                    <div key={category.id} className="space-y-3">
+                      <button
+                        className={`text-base font-semibold ${
+                          selectedCategory === category.id
+                            ? "text-primary"
+                            : "text-gray-800"
+                        } hover:text-primary transition-colors w-full text-left`}
+                        onClick={() => handleCategoryChange(category.id)}
                       >
-                        {cat}
-                      </Label>
+                        {category.name}
+                      </button>
+
+                      <div className="ml-3 space-y-2">
+                        {category.subcategories.map((subcategory) => (
+                          <div
+                            key={subcategory.id}
+                            className="flex items-center"
+                          >
+                            <Checkbox
+                              checked={selectedSubcategory === subcategory.id}
+                              id={`subcat-${subcategory.id}`}
+                              onCheckedChange={() =>
+                                handleSubcategoryChange(subcategory.id)
+                              }
+                            />
+                            <Label
+                              className={`ml-2 cursor-pointer ${
+                                selectedSubcategory === subcategory.id
+                                  ? "text-primary font-medium"
+                                  : "text-gray-600"
+                              }`}
+                              htmlFor={`subcat-${subcategory.id}`}
+                            >
+                              {subcategory.name}
+                            </Label>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
-                <div className="font-medium text-gray-800 mt-4">
-                  Accessories
-                </div>
-                <div className="ml-4 space-y-3">
-                  {["Scarves", "Jewelry", "Bags"].map((cat) => (
-                    <div key={cat} className="flex items-center">
-                      <Checkbox id={`cat-${cat.toLowerCase()}`} />
-                      <Label
-                        className="ml-2 cursor-pointer text-gray-700"
-                        htmlFor={`cat-${cat.toLowerCase()}`}
-                      >
-                        {cat}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-                <div className="font-medium text-gray-800 mt-4">Outwear</div>
-                <div className="ml-4 space-y-3">
-                  {["Jackets", "Coats", "Blazers"].map((cat) => (
-                    <div key={cat} className="flex items-center">
-                      <Checkbox id={`cat-${cat.toLowerCase()}`} />
-                      <Label
-                        className="ml-2 cursor-pointer text-gray-700"
-                        htmlFor={`cat-${cat.toLowerCase()}`}
-                      >
-                        {cat}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-                <div className="font-medium text-gray-800 mt-4">Knitwear</div>
-                <div className="ml-4 space-y-3">
-                  {["Sweaters", "Cardigans", "Hoodies"].map((cat) => (
-                    <div key={cat} className="flex items-center">
-                      <Checkbox id={`cat-${cat.toLowerCase()}`} />
-                      <Label
-                        className="ml-2 cursor-pointer text-gray-700"
-                        htmlFor={`cat-${cat.toLowerCase()}`}
-                      >
-                        {cat}
-                      </Label>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -516,7 +420,8 @@ function ShopContent() {
             <div className="text-sm font-medium text-gray-600">
               Showing {products.length} out of {totalProducts} results
             </div>
-            <div className="flex space-x-2">
+            {/* Only show layout toggle on tablet and larger screens */}
+            <div className="hidden md:flex space-x-2">
               <button
                 aria-label="Grid view"
                 className={`p-2 rounded-lg transition-all ${
@@ -589,88 +494,18 @@ function ShopContent() {
                 ))
             ) : products.length > 0 ? (
               products.map((product) => (
-                <div
+                <ProductCard
                   key={product.id}
-                  className={`
-                    bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300
-                    ${layoutView === "list" ? "flex" : "flex flex-col"}
-                  `}
-                >
-                  <div
-                    className={`relative ${layoutView === "list" ? "w-1/3" : ""}`}
-                  >
-                    <div className="overflow-hidden">
-                      <Image
-                        alt={product.name}
-                        className={`
-                          w-full object-cover transition-transform duration-500 hover:scale-105
-                          ${layoutView === "list" ? "h-[200px] rounded-l-3xl" : "h-auto rounded-t-3xl"}
-                        `}
-                        height={layoutView === "list" ? 200 : 400}
-                        src="/shirt.png"
-                        width={300}
-                      />
-                    </div>
-                    <div className="absolute top-3 right-3 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
-                      New
-                    </div>
-                  </div>
-                  <div
-                    className={`p-5 ${layoutView === "list" ? "w-2/3 flex flex-col" : ""}`}
-                  >
-                    <h3 className="text-lg font-medium mb-2 text-gray-800">
-                      {product.name}
-                    </h3>
-                    <p className="text-base font-bold mb-3 text-gray-900">
-                      {product.price} EGP
-                    </p>
-                    {layoutView === "list" && (
-                      <p className="text-sm text-gray-600 mb-4 line-clamp-3">
-                        {product.description}
-                      </p>
-                    )}
-
-                    {/* Buttons Container */}
-                    <div
-                      className={`
-                      ${layoutView === "list" ? "flex space-x-3 mt-auto" : "flex flex-col space-y-3 mt-3"}
-                    `}
-                    >
-                      {/* Add to Cart Button */}
-                      <button
-                        className={`
-                          text-sm font-medium py-3 px-4 rounded-full 
-                          ${
-                            productsInCart.includes(product.id)
-                              ? "bg-black text-white hover:bg-gray-800"
-                              : "bg-white border border-gray-300 hover:bg-gray-50 hover:border-gray-400"
-                          } 
-                          transition-all duration-300 flex items-center justify-center
-                          ${layoutView === "list" ? "flex-1" : "w-full"}
-                        `}
-                        onClick={() => handleAddToCart(product)}
-                      >
-                        <ShoppingCart className="w-4 h-4 mr-2" />
-                        {productsInCart.includes(product.id)
-                          ? "In Cart"
-                          : "Add to Cart"}
-                      </button>
-
-                      {/* Checkout Now Button */}
-                      <button
-                        className={`
-                          text-sm font-bold py-3 px-4 rounded-full bg-red-600 text-white
-                          hover:bg-red-700 transition-all duration-300 flex items-center justify-center
-                          ${layoutView === "list" ? "flex-1" : "w-full"}
-                        `}
-                        onClick={() => handleCheckoutNow(product)}
-                      >
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Checkout Now
-                      </button>
-                    </div>
-                  </div>
-                </div>
+                  description={
+                    layoutView === "list" ? product.description : undefined
+                  }
+                  id={product.id}
+                  image_path={product.image_path || "/shirt.png"}
+                  layoutView={layoutView}
+                  link={`/product/${product.id}`}
+                  name={product.name}
+                  price={product.price}
+                />
               ))
             ) : (
               <div className="col-span-full text-center py-12 text-gray-500">

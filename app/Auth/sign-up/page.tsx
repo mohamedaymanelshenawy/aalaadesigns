@@ -2,7 +2,11 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardBody, Input, Button, Link, Image } from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
+import { Image } from "@heroui/image";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
+import { Link } from "@heroui/link";
 import { useTheme } from "next-themes";
 import { XCircle, X } from "lucide-react";
 
