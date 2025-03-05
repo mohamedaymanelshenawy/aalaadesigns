@@ -8,7 +8,7 @@ import {
   CardBody,
   Button,
   Input,
-} from "@nextui-org/react";
+} from "@heroui/react";
 import { ChevronDown, Search, Mail } from "lucide-react";
 
 const faqs = [

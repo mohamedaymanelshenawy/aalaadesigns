@@ -3,7 +3,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { ButtonHTMLAttributes, ReactNode } from "react";
 import { CreditCard, Truck, AlertCircle } from "lucide-react";
-import { Image } from "@nextui-org/react";
+import { Image } from "@heroui/react";
 // Input component
 import {
   InputHTMLAttributes,

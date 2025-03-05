@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { ChevronDown } from "lucide-react";
-import { Button } from "@nextui-org/react";
+import { Button } from "@heroui/react";
 
 interface SelectProps {
   children: React.ReactNode;
