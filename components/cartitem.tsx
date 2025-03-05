@@ -1,6 +1,6 @@
 "use client";
 
-import { Image } from "@heroui/react";
+import { Image } from "@heroui/image";
 import { useTheme } from "next-themes";
 
 import { Input } from "@/components/ui/input";

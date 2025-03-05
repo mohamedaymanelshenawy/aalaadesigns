@@ -1,6 +1,8 @@
 "use client";
 import { useState } from "react";
-import { Card, CardBody, Input, Button } from "@heroui/react";
+import { Card, CardBody } from "@heroui/card";
+import { Button } from "@heroui/button";
+import { Input } from "@heroui/input";
 
 const ContactUs = () => {
   const [formData, setFormData] = useState({

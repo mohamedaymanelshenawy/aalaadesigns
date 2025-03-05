@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
-import { Image, Link } from "@heroui/react";
+import { Image } from "@heroui/image";
+import { Link } from "@heroui/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
