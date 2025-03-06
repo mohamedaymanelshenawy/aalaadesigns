@@ -26,7 +26,7 @@ export default function CartPage() {
   }, [user]);
 
   const handleCheckout = () => {
-    router.push("/billing");
+    router.push("/checkout");
   };
   const goToHomePage = () => {
     router.push("../");
@@ -34,7 +34,6 @@ export default function CartPage() {
 
   async function fetchCartItems() {
     if (!user || !user.id) {
-      setError("User not found");
       setIsLoading(false);
 
       return;
@@ -57,6 +56,15 @@ export default function CartPage() {
 
       setCart(result);
     } catch (err) {
+      try {
+        if (!cart) {
+          throw new Error();
+        } else {
+          setError(null);
+        }
+      } catch (er) {
+        setError(err instanceof Error ? err.message : "An error occurred");
+      }
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsLoading(false);

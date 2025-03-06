@@ -58,34 +58,57 @@ export default function ProductCard({
 
   const handleAddToCart = async () => {
     setIsLoading(true);
-    try {
-      //set delay to 1 second
-      //await new Promise((resolve) => setTimeout(resolve, 5000));
-      const response = await addToCart({
-        productId: id,
-        count: 1,
-        user: user,
-      });
-
-      if (response && response.status === 200) {
-        setIsCarted(true);
-        setCart((prevCart: Cart) => ({
-          ...prevCart,
-          items: [
-            ...(prevCart?.items || []),
-            { id, name, price, image_path, count: 1 },
-          ],
-        }));
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-      }
-    } catch (error) {
-    } finally {
+    if (!user) {
+      //make a temp cart for the guest user
+      setIsCarted(true);
+      setCart((prevCart: Cart) => ({
+        ...prevCart,
+        items: [
+          ...(prevCart?.items || []),
+          { id, name, price, image_path, count: 1 },
+        ],
+      }));
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
       setIsLoading(false);
+    } else {
+      try {
+        //set delay to 1 second
+        //await new Promise((resolve) => setTimeout(resolve, 5000));
+        const response = await addToCart({
+          productId: id,
+          count: 1,
+          user: user,
+        });
+
+        if (response && response.status === 200) {
+          setIsCarted(true);
+          setCart((prevCart: Cart) => ({
+            ...prevCart,
+            items: [
+              ...(prevCart?.items || []),
+              { id, name, price, image_path, count: 1 },
+            ],
+          }));
+          window.dispatchEvent(new CustomEvent("cartUpdated"));
+        }
+      } catch (error) {
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   const handleRemoveFromCart = async () => {
     setIsLoading(true);
+    if (!user) {
+      setIsCarted(false);
+      setCart((prevCart: Cart) => ({
+        ...prevCart,
+        items: prevCart.items.filter((item) => item.id !== id),
+      }));
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
+      setIsLoading(false);
+    }
     try {
       const response = await removeFromCart({
         productId: id,
