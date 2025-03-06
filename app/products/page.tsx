@@ -502,7 +502,7 @@ function ShopContent() {
                   id={product.id}
                   image_path={product.image_path || "/shirt.png"}
                   layoutView={layoutView}
-                  link={`/product/${product.id}`}
+                  link={`/products/${product.id}`}
                   name={product.name}
                   price={product.price}
                 />
