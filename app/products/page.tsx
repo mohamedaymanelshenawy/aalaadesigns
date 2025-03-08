@@ -75,10 +75,10 @@ function ShopContent() {
   );
   const [error, setError] = useState<boolean>(false);
   const [priceRange, setPriceRange] = useState<number[]>([0, 1000]);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
+  //const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>("newest");
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
-  const [layoutView, setLayoutView] = useState<"grid" | "list">("grid");
+  const [layoutView, setLayoutView] = useState<"grid" | "list">("list");
 
   // Force grid view on mobile
   useEffect(() => {
@@ -144,7 +144,7 @@ function ShopContent() {
 
       const response = await fetch(`/api/products?${queryParams.toString()}`);
       const fetchedProductsData = await response.json();
-
+      console.log(fetchedProductsData);
       setProducts(fetchedProductsData.products);
       setTotalProducts(fetchedProductsData.totalProducts);
       setTotalPages(fetchedProductsData.totalPages);
@@ -268,10 +268,9 @@ function ShopContent() {
                   {[
                     "Newest",
                     "Oldest",
-                    "Recommended",
-                    "Availability",
                     "Price (Low to High)",
                     "Price (High to Low)",
+                    "Availability",
                   ].map((option) => (
                     <div key={option} className="flex items-center">
                       <RadioGroupItem
@@ -306,52 +305,6 @@ function ShopContent() {
                   <span>{priceRange[0]} EGP</span>
                   <span>{priceRange[1]} EGP</span>
                 </div>
-              </div>
-            </div>
-
-            {/* Color */}
-            <div>
-              <h3 className="font-bold mb-4 text-gray-800 text-lg">Color</h3>
-              <div className="space-y-3">
-                {[
-                  "Multi",
-                  "Black",
-                  "White",
-                  "Beige",
-                  "Olive",
-                  "Red",
-                  "Pink",
-                  "Blue",
-                  "Grey",
-                  "Purple",
-                ].map((color) => (
-                  <div key={color} className="flex items-center">
-                    <Checkbox
-                      checked={selectedColors.includes(color.toLowerCase())}
-                      id={`color-${color.toLowerCase()}`}
-                      onCheckedChange={(checked) => {
-                        if (checked) {
-                          setSelectedColors([
-                            ...selectedColors,
-                            color.toLowerCase(),
-                          ]);
-                        } else {
-                          setSelectedColors(
-                            selectedColors.filter(
-                              (c) => c !== color.toLowerCase()
-                            )
-                          );
-                        }
-                      }}
-                    />
-                    <Label
-                      className="ml-2 cursor-pointer text-gray-700"
-                      htmlFor={`color-${color.toLowerCase()}`}
-                    >
-                      {color}
-                    </Label>
-                  </div>
-                ))}
               </div>
             </div>
 
